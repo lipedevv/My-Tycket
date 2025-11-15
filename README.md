@@ -168,7 +168,7 @@ Desenvolvido e mantido por **DEV7Kadu**
 ## 🎉 **INSTALAÇÃO COMPLETA EM 1 COMANDO**
 
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/Atiketet.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/My-Tycket.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
 ```
 
 **Após a instalação, acesse:** `https://seu-dominio.com`
