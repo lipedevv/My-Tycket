@@ -70,7 +70,29 @@ system_git_clone() {
   sleep 2
 
   sudo su - deploy <<EOF
-  git clone ${link_git} /home/deploy/${instancia_add}/
+  # Clone para pasta temporária
+  git clone ${link_git} /tmp/whaticket-temp
+  
+  # Criar estrutura de diretórios
+  mkdir -p /home/deploy/${instancia_add}
+  
+  # Mover código da subpasta para o local correto
+  if [ -d "/tmp/whaticket-temp/Código Fonte/backend" ]; then
+    mv /tmp/whaticket-temp/Código\ Fonte/backend /home/deploy/${instancia_add}/
+  else
+    echo "⚠️ Pasta backend não encontrada em 'Código Fonte/'"
+  fi
+  
+  if [ -d "/tmp/whaticket-temp/Código Fonte/frontend" ]; then
+    mv /tmp/whaticket-temp/Código\ Fonte/frontend /home/deploy/${instancia_add}/
+  else
+    echo "⚠️ Pasta frontend não encontrada em 'Código Fonte/'"
+  fi
+  
+  # Limpar pasta temporária
+  rm -rf /tmp/whaticket-temp
+  
+  echo "✅ Código extraído das subpastas com sucesso"
 EOF
 
   sleep 2
