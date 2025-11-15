@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# WhatiTicket Plus - Instalador Automático
+# Atiketet - Instalador Automático
 # Compatível com Ubuntu 20.04, 22.04 e 24.04 LTS
 
 # Cores para output
@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}"
 echo "╔══════════════════════════════════════════════════════════╗"
 echo "║                                                          ║"
-echo "║          🚀 WHATICKET PLUS - INSTALADOR AUTO             ║"
+echo "║              🚀 ATIKETET - INSTALADOR AUTO               ║"
 echo "║                                                          ║"
 echo "║          📱 Sistema de Atendimento WhatsApp              ║"
 echo "║          🔧 Instalação Automática Ubuntu LTS             ║"

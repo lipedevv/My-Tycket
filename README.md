@@ -1,4 +1,4 @@
-# 🚀 WhatiTicket Plus - Sistema de Atendimento WhatsApp
+# 🚀 Atiketet - Sistema de Atendimento WhatsApp
 
 ## 📱 Sistema completo de atendimento via WhatsApp com múltiplas instâncias
 
@@ -17,19 +17,14 @@
 
 ## ⚡ **INSTALAÇÃO RÁPIDA**
 
-### **Ubuntu 22.04/24.04 LTS (Recomendado)**:
+### **Ubuntu Server 22.04 LTS**:
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git curl lsb-release -y && rm -rf My-Tycket && git clone https://github.com/DEV7Kadu/My-Tycket.git && cd My-Tycket && chmod +x ./whaticketplus && ./whaticketplus"
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/Atiketet.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
 ```
 
 ### **Comando alternativo via curl**:
 ```bash
-sudo bash -c "$(curl -sSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/install.sh)"
-```
-
-### **Ubuntu 20.04 LTS**:
-```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf My-Tycket && git clone https://github.com/DEV7Kadu/My-Tycket.git && cd My-Tycket && chmod +x ./Instalador/install_primaria && ./Instalador/install_primaria"
+sudo bash -c "$(curl -sSL https://raw.githubusercontent.com/DEV7Kadu/Atiketet/main/install.sh)"
 ```
 
 ---
@@ -38,7 +33,7 @@ sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf 
 
 Após ter o sistema principal instalado:
 ```bash
-cd My-Tycket && sudo ./Instalador/install_instancia_ubuntu22
+cd atiketet && sudo ./Instalador/install_instancia_ubuntu22
 ```
 
 ---
@@ -57,22 +52,9 @@ cd My-Tycket && sudo ./Instalador/install_instancia_ubuntu22
 
 | Ubuntu Version | Status | Script |
 |---|---|---|
-| **20.04 LTS** | ✅ Suportado | `install_primaria` ou `whaticketplus` |
-| **22.04 LTS** | ✅ **Recomendado** | `whaticketplus` |
-| **24.04 LTS** | ✅ Suportado | `whaticketplus` |
-
----
-
-## 📚 **DOCUMENTAÇÃO**
-
-### 📖 **Guias de Instalação**:
-- [📋 Instalação Rápida](INSTALACAO_RAPIDA.md)
-- [📖 Guia Completo](README_INSTALACAO.md)
-- [🔧 Instalação Ubuntu 22/24](Instalador/README_Ubuntu22.md)
-
-### 🔧 **Documentação Técnica**:
-- [📊 Relatório de Compatibilidade](Instalador/COMPATIBILITY_REPORT.md)
-- [🔄 Guia de Migração](Instalador/MIGRATION_GUIDE.md)
+| **20.04 LTS** | ✅ Suportado | `install_primaria` |
+| **22.04 LTS** | ✅ **Recomendado** | `install_ubuntu22` |
+| **24.04 LTS** | ✅ Suportado | `install_ubuntu22` |
 
 ---
 
@@ -142,7 +124,7 @@ sudo apt update && sudo apt install -y git
 ### **Erro comum**: "Permission denied"
 ```bash
 # Sempre execute com sudo
-sudo ./whaticketplus
+sudo ./atiketet
 ```
 
 ### **Verificar instalação**:
@@ -179,14 +161,14 @@ Este projeto está licenciado sob a [Licença MIT](LICENSE).
 Desenvolvido e mantido por **DEV7Kadu**
 
 - 🏠 **GitHub**: [DEV7Kadu](https://github.com/DEV7Kadu)
-- 📁 **Repositório**: [My-Tycket](https://github.com/DEV7Kadu/My-Tycket)
+- 📁 **Repositório**: [Atiketet](https://github.com/DEV7Kadu/Atiketet)
 
 ---
 
 ## 🎉 **INSTALAÇÃO COMPLETA EM 1 COMANDO**
 
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git curl lsb-release -y && rm -rf My-Tycket && git clone https://github.com/DEV7Kadu/My-Tycket.git && cd My-Tycket && chmod +x ./whaticketplus && ./whaticketplus"
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/Atiketet.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
 ```
 
 **Após a instalação, acesse:** `https://seu-dominio.com`

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "🔍 DIAGNÓSTICO DO ERRO 502 - WhatiTicket Plus"
-echo "=============================================="
+echo "🔍 DIAGNÓSTICO DO SISTEMA - Atiketet"
+echo "===================================="
 
 echo ""
 echo "1. 📊 STATUS DOS SERVIÇOS:"
