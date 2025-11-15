@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# WhatiTicket Plus - Instalador Automático
+# Compatível com Ubuntu 20.04, 22.04 e 24.04 LTS
+
+# Cores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Banner
+echo -e "${BLUE}"
+echo "╔══════════════════════════════════════════════════════════╗"
+echo "║                                                          ║"
+echo "║          🚀 WHATICKET PLUS - INSTALADOR AUTO             ║"
+echo "║                                                          ║"
+echo "║          📱 Sistema de Atendimento WhatsApp              ║"
+echo "║          🔧 Instalação Automática Ubuntu LTS             ║"
+echo "║                                                          ║"
+echo "╚══════════════════════════════════════════════════════════╝"
+echo -e "${NC}\n"
+
+# Detectar versão do Ubuntu
+UBUNTU_VERSION=$(lsb_release -rs 2>/dev/null || echo "unknown")
+UBUNTU_CODENAME=$(lsb_release -cs 2>/dev/null || echo "unknown")
+
+echo -e "${YELLOW}🔍 Detectando sistema...${NC}"
+echo -e "   💻 Ubuntu: ${GREEN}$UBUNTU_VERSION ($UBUNTU_CODENAME)${NC}"
+
+# Verificar compatibilidade e escolher script
+case $UBUNTU_VERSION in
+    "20.04")
+        echo -e "   ✅ Sistema: ${GREEN}Ubuntu 20.04 LTS - Totalmente suportado${NC}"
+        SCRIPT="Instalador/install_primaria"
+        ;;
+    "22.04")
+        echo -e "   ✅ Sistema: ${GREEN}Ubuntu 22.04 LTS - Recomendado${NC}"
+        SCRIPT="Instalador/install_ubuntu22"
+        ;;
+    "24.04")
+        echo -e "   ✅ Sistema: ${GREEN}Ubuntu 24.04 LTS - Suportado${NC}"
+        SCRIPT="Instalador/install_ubuntu22"
+        ;;
+    *)
+        echo -e "   ⚠️  Sistema: ${YELLOW}Ubuntu $UBUNTU_VERSION - Não testado${NC}"
+        echo -e "   📋 Versões recomendadas: 20.04, 22.04, 24.04"
+        echo ""
+        read -p "   🤔 Continuar mesmo assim? (s/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[SsYy]$ ]]; then
+            echo -e "${RED}❌ Instalação cancelada${NC}"
+            exit 1
+        fi
+        SCRIPT="Instalador/install_ubuntu22"
+        ;;
+esac
+
+echo ""
+echo -e "${BLUE}🎯 Iniciando instalação...${NC}"
+echo -e "   📂 Script: ${GREEN}$SCRIPT${NC}"
+echo ""
+
+# Verificar se o script existe
+if [[ ! -f "$SCRIPT" ]]; then
+    echo -e "${RED}❌ Erro: Script $SCRIPT não encontrado${NC}"
+    echo -e "   📁 Arquivos disponíveis em Instalador/:"
+    ls -la Instalador/ | grep install
+    exit 1
+fi
+
+# Tornar executável
+chmod +x "$SCRIPT"
+
+# Verificar se é root
+if [[ $EUID -ne 0 ]]; then
+    echo -e "${YELLOW}⚠️  Este script precisa ser executado como root${NC}"
+    echo -e "   💡 Execute: ${GREEN}sudo $0${NC}"
+    exit 1
+fi
+
+# Executar instalação
+echo -e "${GREEN}🚀 Executando instalação...${NC}"
+echo "=============================================="
+exec "$SCRIPT"
