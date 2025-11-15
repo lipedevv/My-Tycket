@@ -19,12 +19,12 @@
 
 ### **Ubuntu Server 22.04 LTS**:
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/Atiketet.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/My-Tycket.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
 ```
 
 ### **Comando alternativo via curl**:
 ```bash
-sudo bash -c "$(curl -sSL https://raw.githubusercontent.com/DEV7Kadu/Atiketet/main/install.sh)"
+sudo bash -c "$(curl -sSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/install.sh)"
 ```
 
 ---
@@ -161,7 +161,7 @@ Este projeto está licenciado sob a [Licença MIT](LICENSE).
 Desenvolvido e mantido por **DEV7Kadu**
 
 - 🏠 **GitHub**: [DEV7Kadu](https://github.com/DEV7Kadu)
-- 📁 **Repositório**: [Atiketet](https://github.com/DEV7Kadu/Atiketet)
+- 📁 **Repositório**: [My-Tycket](https://github.com/DEV7Kadu/My-Tycket)
 
 ---
 

@@ -4,12 +4,12 @@
 
 ### Ubuntu Server 22.04 LTS (Comando solicitado):
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/Atiketet.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/My-Tycket.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
 ```
 
 ### Alternativa via curl (mais simples):
 ```bash
-sudo bash -c "$(curl -sSL https://raw.githubusercontent.com/DEV7Kadu/Atiketet/main/install.sh)"
+sudo bash -c "$(curl -sSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/install.sh)"
 ```
 
 ---

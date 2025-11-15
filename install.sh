@@ -12,7 +12,7 @@ echo -e "${B}🚀 Atiketet - Instalação Automática${NC}"
 echo "============================================="
 
 # Verificar root
-[[ $EUID -ne 0 ]] && { echo -e "${R}❌ Execute como root${NC}"; exit 1; }
+[[ $EUID -ne 0 ]] && { echo -e "${R}❌ Execute como root: sudo bash -c \"\$(curl -sSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/install.sh)\"${NC}"; exit 1; }
 
 # Preparar sistema
 echo -e "${Y}📦 Preparando sistema...${NC}"
@@ -22,7 +22,7 @@ apt install -y -qq sudo git curl lsb-release
 # Baixar e instalar
 echo -e "${Y}📥 Baixando Atiketet...${NC}"
 rm -rf atiketet
-git clone -q https://github.com/DEV7Kadu/Atiketet.git atiketet
+git clone -q https://github.com/DEV7Kadu/My-Tycket.git atiketet
 cd atiketet
 chmod +x ./atiketet
 
