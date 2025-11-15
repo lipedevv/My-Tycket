@@ -50,8 +50,30 @@ system_create_user() {
   sleep 2
 
   sudo su - root <<EOF
-  useradd -m -p $(openssl passwd -crypt ${mysql_root_password}) -s /bin/bash -G sudo deploy
-  usermod -aG sudo deploy
+  # Verificar se usuário já existe
+  if id "deploy" &>/dev/null; then
+    echo "⚠️ Usuário 'deploy' já existe, configurando apenas grupos..."
+    usermod -aG sudo deploy
+  else
+    echo "🔹 Criando usuário 'deploy'..."
+    # Criar usuário com método mais compatível
+    useradd -m -s /bin/bash deploy
+    echo "deploy:${mysql_root_password}" | chpasswd
+    usermod -aG sudo deploy
+    
+    # Verificar se foi criado com sucesso
+    if id "deploy" &>/dev/null; then
+      echo "✅ Usuário 'deploy' criado com sucesso"
+    else
+      echo "❌ Falha ao criar usuário 'deploy'"
+      exit 1
+    fi
+  fi
+  
+  # Configurar diretório home
+  mkdir -p /home/deploy
+  chown deploy:deploy /home/deploy
+  chmod 755 /home/deploy
 EOF
 
   sleep 2
