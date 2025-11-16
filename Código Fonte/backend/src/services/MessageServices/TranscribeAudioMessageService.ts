@@ -4,13 +4,8 @@ import FormData from 'form-data';
 import axios from 'axios';
 import OpenAI from 'openai';
 import Setting from "../../models/Setting";
-// import Configuration from 'openai';
 
 type Response = { transcribedText: string } | string;
-
-// const configuration = new Configuration({
-//   apiKey: process.env.OPENAI_API_KEY,
-// });
 
 async function fetchOpenAIToken() {
   let key_OPENAI_TOKEN = null;
@@ -31,8 +26,6 @@ async function fetchOpenAIToken() {
   }
   
 }
-
-// const openai = new OpenAI({ apiKey: OpenaiKEY });
 
 const TranscribeAudioMessageToText = async (fileName: string, companyId: number): Promise<Response> => {
   const token = await fetchOpenAIToken();

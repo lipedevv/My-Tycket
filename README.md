@@ -1,4 +1,4 @@
-# 🚀 Atiketet - Sistema de Atendimento WhatsApp
+# 🚀 WhatTicket Plus - Sistema de Atendimento WhatsApp
 
 ## 📱 Sistema completo de atendimento via WhatsApp com múltiplas instâncias
 
@@ -19,7 +19,7 @@
 
 ### **Ubuntu Server 22.04 LTS**:
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/My-Tycket.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
 ```
 
 ### **Comando alternativo via curl**:
@@ -33,7 +33,7 @@ sudo bash -c "$(curl -sSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/m
 
 Após ter o sistema principal instalado:
 ```bash
-cd atiketet && sudo ./Instalador/install_instancia_ubuntu22
+cd whaticketplus && sudo ./Instalador/install_instancia_ubuntu22
 ```
 
 ---
@@ -124,7 +124,7 @@ sudo apt update && sudo apt install -y git
 ### **Erro comum**: "Permission denied"
 ```bash
 # Sempre execute com sudo
-sudo ./atiketet
+sudo ./whaticketplus
 ```
 
 ### **Verificar instalação**:
@@ -168,7 +168,7 @@ Desenvolvido e mantido por **DEV7Kadu**
 ## 🎉 **INSTALAÇÃO COMPLETA EM 1 COMANDO**
 
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf atiketet && git clone https://github.com/DEV7Kadu/My-Tycket.git atiketet && cd atiketet && chmod +x ./atiketet && ./atiketet"
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
 ```
 
 **Após a instalação, acesse:** `https://seu-dominio.com`
