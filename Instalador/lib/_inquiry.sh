@@ -11,6 +11,34 @@ get_mysql_root_password() {
 get_link_git() {
   
   print_banner
+  
+  # Tentar detectar automaticamente o repositório Git atual
+  if [[ -d ".git" ]]; then
+    # Pegar a URL do repositório atual
+    local detected_git=$(git config --get remote.origin.url 2>/dev/null)
+    
+    if [[ -n "$detected_git" ]]; then
+      # Converter SSH para HTTPS se necessário
+      if [[ "$detected_git" =~ ^git@ ]]; then
+        detected_git=$(echo "$detected_git" | sed 's|git@github.com:|https://github.com/|' | sed 's|\.git$||')
+      fi
+      
+      printf "${GREEN} ✅ Repositório Git detectado automaticamente:${GRAY_LIGHT}"
+      printf "\n   📂 ${BLUE}$detected_git${GRAY_LIGHT}\n"
+      printf "${WHITE} 💻 Usar este repositório? (S/n):${GRAY_LIGHT}"
+      printf "\n\n"
+      read -p "> " use_detected
+      
+      # Se usuário aceitar (S, s, Enter ou vazio), usar o detectado
+      if [[ -z "$use_detected" ]] || [[ "$use_detected" =~ ^[SsYy]$ ]]; then
+        link_git="$detected_git"
+        printf "${GREEN} ✅ Usando repositório atual: $link_git${NC}\n"
+        return 0
+      fi
+    fi
+  fi
+  
+  # Se não detectou ou usuário não quis usar, perguntar manualmente
   printf "${WHITE} 💻 Insira o link do GITHUB do Whaticket Plus que deseja instalar:${GRAY_LIGHT}"
   printf "\n\n"
   read -p "> " link_git
