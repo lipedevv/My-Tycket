@@ -36,7 +36,52 @@ frontend_node_build() {
 
   sudo su - deploy <<EOF
   cd /home/deploy/${instancia_add}/frontend
+  
+  # Configurar variáveis de ambiente para build otimizado
+  export NODE_ENV=production
+  export GENERATE_SOURCEMAP=false
+  export INLINE_RUNTIME_CHUNK=false
+  export NODE_OPTIONS="--max-old-space-size=4096"
+  
+  # Limpar build anterior se existir
+  echo "🧹 Limpando build anterior..."
+  rm -rf build/*
+  
+  # Executar build principal
+  echo "🏗️ Construindo aplicação..."
   npm run build
+  
+  # Verificar se index.html foi criado corretamente
+  if [[ -f "build/index.html" ]]; then
+    file_size=\$(stat -c%s "build/index.html" 2>/dev/null || stat -f%z "build/index.html" 2>/dev/null)
+    if [[ "\$file_size" -gt 100 ]]; then
+      echo "✅ Build criado com sucesso (\$file_size bytes)"
+      # Criar backup do index.html
+      cp "build/index.html" "build/index.html.bak"
+      echo "💾 Backup criado: build/index.html.bak"
+    else
+      echo "⚠️ index.html muito pequeno (\$file_size bytes), tentando rebuild..."
+      rm -rf build/*
+      npm run build
+    fi
+  else
+    echo "❌ index.html não foi criado! Tentando correção..."
+    # Tentar build com configuração alternativa
+    npm install --legacy-peer-deps
+    npm run build
+  fi
+  
+  # Verificação final
+  if [[ -f "build/index.html" ]]; then
+    echo "🎉 Frontend compilado com sucesso!"
+    ls -la build/index.html
+  else
+    echo "❌ ERRO: Build do frontend falhou!"
+    exit 1
+  fi
+  
+  # Configurar permissões adequadas
+  chmod -R 755 build/
 EOF
 
   sleep 2
@@ -59,9 +104,34 @@ frontend_update() {
   pm2 stop ${empresa_atualizar}-frontend
   git pull
   cd /home/deploy/${empresa_atualizar}/frontend
+  
+  # Configurar ambiente para build otimizado
+  export NODE_ENV=production
+  export GENERATE_SOURCEMAP=false
+  export INLINE_RUNTIME_CHUNK=false
+  export NODE_OPTIONS="--max-old-space-size=4096"
+  
   npm install
   rm -rf build
+  
+  # Build com verificação automática
+  echo "🏗️ Reconstruindo frontend..."
   npm run build
+  
+  # Verificar se build foi criado corretamente
+  if [[ -f "build/index.html" ]]; then
+    file_size=\$(stat -c%s "build/index.html" 2>/dev/null || stat -f%z "build/index.html" 2>/dev/null)
+    echo "✅ Frontend atualizado com sucesso (\$file_size bytes)"
+    # Criar backup
+    cp "build/index.html" "build/index.html.bak"
+  else
+    echo "❌ ERRO: Falha na atualização do frontend!"
+    exit 1
+  fi
+  
+  # Configurar permissões
+  chmod -R 755 build/
+  
   pm2 start ${empresa_atualizar}-frontend
   pm2 save
 EOF
