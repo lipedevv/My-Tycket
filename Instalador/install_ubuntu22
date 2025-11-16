@@ -166,45 +166,6 @@ chmod +x /home/deploy/${instancia_add}/scripts/fix_frontend.sh
 chown deploy:deploy /home/deploy/${instancia_add}/scripts/fix_frontend.sh
 
 echo ""
-print_banner  
-printf "${WHITE} ✅ Executando verificação final...${GRAY_LIGHT}\n"
+print_banner
+printf "${WHITE} ✅ Instalação concluída com sucesso!${GRAY_LIGHT}\n"
 printf "\n\n"
-
-# Executar verificação
-if bash "${PROJECT_ROOT}"/utils/verify_installation.sh; then
-    echo ""
-    echo "🎉 ================================="
-    echo "🎉 INSTALAÇÃO CONCLUÍDA COM SUCESSO!"
-    echo "🎉 ================================="
-else
-    echo ""
-    echo "⚠️ ================================="
-    echo "⚠️ INSTALAÇÃO COM ALGUNS PROBLEMAS"
-    echo "⚠️ ================================="
-    echo ""
-    echo "🔧 Execute para corrigir:"
-    echo "   sudo /home/deploy/${instancia_add}/scripts/fix_frontend.sh"
-fi
-echo ""
-echo "✅ Sistema compatível com Ubuntu 22/24"
-echo "✅ Todas as dependências instaladas"
-echo "✅ Backend e Frontend configurados"
-echo "✅ SSL/HTTPS configurado"
-echo "✅ Scripts de correção instalados"
-echo ""
-echo "🌐 Acesse seu sistema em:"
-echo "📱 Frontend: ${frontend_url}"
-echo "🔧 Backend: ${backend_url}"
-echo ""
-echo "📋 Próximos passos:"
-echo "1. Acesse o frontend e configure sua empresa"
-echo "2. Configure seus usuários"
-echo "3. Conecte seus WhatsApps"
-echo ""
-echo "🛠️ Scripts de manutenção disponíveis:"
-echo "📊 Verificar sistema: /home/deploy/${instancia_add}/scripts/verify_installation.sh"
-echo "🔧 Corrigir frontend: /home/deploy/${instancia_add}/scripts/fix_frontend.sh"
-echo ""
-echo "💡 Se encontrar o erro 'ENOENT index.html', execute:"
-echo "   sudo /home/deploy/${instancia_add}/scripts/fix_frontend.sh"
-echo ""
