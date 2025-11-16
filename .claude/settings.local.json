@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(set GENERATE_SOURCEMAP=false)",
+      "Bash(set INLINE_RUNTIME_CHUNK=false)",
+      "Bash(npm run build:*)",
+      "Bash(npm run builddev:*)",
+      "Bash(set NODE_OPTIONS=--experimental-specifier-resolution=node)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

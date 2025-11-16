@@ -5,6 +5,7 @@
   "nomeEmpresa": "Whaticket Plus",
   "private": true,
   "dependencies": {
+    "@csstools/normalize.css": "^12.1.1",
     "@date-io/date-fns": "^2.14.0",
     "@date-io/moment": "^3.0.0",
     "@emotion/styled": "^11.10.6",
@@ -25,6 +26,7 @@
     "bootstrap": "^5.3.8",
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.1.0",
+    "compression": "^1.8.1",
     "compressorjs": "^1.2.1",
     "context": "^4.0.0",
     "date-fns": "^2.30.0",
@@ -33,6 +35,7 @@
     "formik": "^2.4.0",
     "formik-material-ui": "^3.0.1",
     "gn-api-sdk-node": "^3.0.2",
+    "helmet": "^6.2.0",
     "html2pdf.js": "^0.10.2",
     "i18next": "^19.8.2",
     "i18next-browser-languagedetector": "^6.0.1",
@@ -77,18 +80,16 @@
     "uuid": "^8.3.2",
     "vcard-parser": "^1.0.0",
     "xlsx": "^0.18.5",
-    "yup": "^0.32.8",
-    "compression": "^1.8.1",
-    "helmet": "^6.2.0"
+    "yup": "^0.32.8"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false INLINE_RUNTIME_CHUNK=false react-scripts build",
+    "build": "react-scripts build",
     "build:analyze": "source-map-explorer 'build/static/js/*.js'",
     "build:prod": "npm run build && npm run build:analyze",
-    "builddev": "export NODE_OPTIONS=\"--max-old-space-size=8192\" && react-scripts build",
-    "test": "export NODE_OPTIONS=\"--max-old-space-size=8192\" && react-scripts test",
-    "eject": "export NODE_OPTIONS=\"--max-old-space-size=8192\" && react-scripts eject",
+    "builddev": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
     "serve": "node server.js"
   },
   "eslintConfig": {

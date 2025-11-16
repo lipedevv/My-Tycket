@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import "./setupStorage";
 import "react-toastify/dist/ReactToastify.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 import lightBackground from '../src/assets/wa-background-light.png';
@@ -9,7 +10,6 @@ import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { useMediaQuery } from "@material-ui/core";
 import ColorModeContext from "./layout/themeContext";
 import { SocketContext, SocketManager } from './context/Socket/SocketContext';
-
 import Routes from "./routes";
 
 const queryClient = new QueryClient();
