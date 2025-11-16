@@ -23,22 +23,16 @@ get_link_git() {
         detected_git=$(echo "$detected_git" | sed 's|git@github.com:|https://github.com/|' | sed 's|\.git$||')
       fi
       
-      printf "${GREEN} ✅ Repositório Git detectado automaticamente:${GRAY_LIGHT}"
-      printf "\n   📂 ${BLUE}$detected_git${GRAY_LIGHT}\n"
-      printf "${WHITE} 💻 Usar este repositório? (S/n):${GRAY_LIGHT}"
-      printf "\n\n"
-      read -p "> " use_detected
-      
-      # Se usuário aceitar (S, s, Enter ou vazio), usar o detectado
-      if [[ -z "$use_detected" ]] || [[ "$use_detected" =~ ^[SsYy]$ ]]; then
-        link_git="$detected_git"
-        printf "${GREEN} ✅ Usando repositório atual: $link_git${NC}\n"
-        return 0
-      fi
+      # Usar automaticamente o repositório detectado
+      link_git="$detected_git"
+      printf "${GREEN} ✅ Repositório Git detectado e selecionado automaticamente:${NC}"
+      printf "\n   📂 ${BLUE}$link_git${NC}\n\n"
+      sleep 2  # Pausa de 2 segundos para mostrar a detecção
+      return 0
     fi
   fi
   
-  # Se não detectou ou usuário não quis usar, perguntar manualmente
+  # Se não detectou, perguntar manualmente
   printf "${WHITE} 💻 Insira o link do GITHUB do Whaticket Plus que deseja instalar:${GRAY_LIGHT}"
   printf "\n\n"
   read -p "> " link_git
