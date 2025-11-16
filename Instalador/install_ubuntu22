@@ -91,15 +91,106 @@ system_nginx_conf
 system_nginx_restart
 system_certbot_setup
 
+# Verificação pós-instalação e scripts de correção
 echo ""
-echo "🎉 ================================="
-echo "🎉 INSTALAÇÃO CONCLUÍDA COM SUCESSO!"
-echo "🎉 ================================="
+print_banner
+printf "${WHITE} 🔧 Configurando scripts de manutenção...${GRAY_LIGHT}\n"
+printf "\n\n"
+
+# Criar diretório de scripts
+mkdir -p /home/deploy/${instancia_add}/scripts
+chown deploy:deploy /home/deploy/${instancia_add}/scripts
+
+# Copiar script de verificação
+chmod +x "${PROJECT_ROOT}"/utils/verify_installation.sh
+cp "${PROJECT_ROOT}"/utils/verify_installation.sh /home/deploy/${instancia_add}/scripts/
+
+# Criar script de correção do frontend
+cat > /home/deploy/${instancia_add}/scripts/fix_frontend.sh << 'EOF'
+#!/bin/bash
+# Script de correção do frontend
+# Resolve problemas de build e index.html
+
+cd "$(dirname "$0")/.."
+INSTANCE_DIR="$(pwd)"
+
+echo "🔧 Corrigindo frontend do WhatTicket Plus..."
+echo "Instância: $(basename "$INSTANCE_DIR")"
+
+cd frontend
+
+# Configurar ambiente
+export NODE_ENV=production
+export GENERATE_SOURCEMAP=false
+export CI=false
+export NODE_OPTIONS="--max-old-space-size=6144"
+
+# Verificar se build existe
+if [[ -f "build/index.html" ]]; then
+    file_size=$(stat -c%s "build/index.html" 2>/dev/null || echo "0")
+    if [[ "$file_size" -gt 1000 ]]; then
+        echo "✅ Build já está funcionando ($file_size bytes)"
+        exit 0
+    fi
+fi
+
+echo "🏗️ Reconstruindo frontend..."
+npm cache clean --force
+rm -rf build/* node_modules/.cache .eslintcache 2>/dev/null || true
+npm install --production=false
+npm run build
+
+if [[ -f "build/index.html" ]]; then
+    file_size=$(stat -c%s "build/index.html" 2>/dev/null || echo "0")
+    if [[ "$file_size" -gt 1000 ]]; then
+        echo "✅ Frontend corrigido com sucesso ($file_size bytes)"
+        chmod -R 755 build/
+        chown -R deploy:deploy build/ 2>/dev/null || true
+        
+        # Reiniciar serviços
+        sudo systemctl restart $(basename "$INSTANCE_DIR") 2>/dev/null || true
+        pm2 restart all 2>/dev/null || true
+        
+        echo "🎉 Correção concluída!"
+    else
+        echo "❌ Falha na correção do frontend"
+        exit 1
+    fi
+else
+    echo "❌ Build falhou completamente"
+    exit 1
+fi
+EOF
+
+chmod +x /home/deploy/${instancia_add}/scripts/fix_frontend.sh
+chown deploy:deploy /home/deploy/${instancia_add}/scripts/fix_frontend.sh
+
+echo ""
+print_banner  
+printf "${WHITE} ✅ Executando verificação final...${GRAY_LIGHT}\n"
+printf "\n\n"
+
+# Executar verificação
+if bash "${PROJECT_ROOT}"/utils/verify_installation.sh; then
+    echo ""
+    echo "🎉 ================================="
+    echo "🎉 INSTALAÇÃO CONCLUÍDA COM SUCESSO!"
+    echo "🎉 ================================="
+else
+    echo ""
+    echo "⚠️ ================================="
+    echo "⚠️ INSTALAÇÃO COM ALGUNS PROBLEMAS"
+    echo "⚠️ ================================="
+    echo ""
+    echo "🔧 Execute para corrigir:"
+    echo "   sudo /home/deploy/${instancia_add}/scripts/fix_frontend.sh"
+fi
 echo ""
 echo "✅ Sistema compatível com Ubuntu 22/24"
 echo "✅ Todas as dependências instaladas"
 echo "✅ Backend e Frontend configurados"
 echo "✅ SSL/HTTPS configurado"
+echo "✅ Scripts de correção instalados"
 echo ""
 echo "🌐 Acesse seu sistema em:"
 echo "📱 Frontend: ${frontend_url}"
@@ -109,4 +200,11 @@ echo "📋 Próximos passos:"
 echo "1. Acesse o frontend e configure sua empresa"
 echo "2. Configure seus usuários"
 echo "3. Conecte seus WhatsApps"
+echo ""
+echo "🛠️ Scripts de manutenção disponíveis:"
+echo "📊 Verificar sistema: /home/deploy/${instancia_add}/scripts/verify_installation.sh"
+echo "🔧 Corrigir frontend: /home/deploy/${instancia_add}/scripts/fix_frontend.sh"
+echo ""
+echo "💡 Se encontrar o erro 'ENOENT index.html', execute:"
+echo "   sudo /home/deploy/${instancia_add}/scripts/fix_frontend.sh"
 echo ""
