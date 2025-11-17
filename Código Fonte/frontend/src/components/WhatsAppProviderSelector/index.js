@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import {
   WhatsApp,
-  Hub,
+  Router,
   Info,
   CheckCircle,
   Error,
@@ -129,7 +129,7 @@ const WhatsAppProviderSelector = ({
       case 'baileys':
         return <WhatsApp fontSize="small" />;
       case 'hub':
-        return <Hub fontSize="small" />;
+        return <Router fontSize="small" />;
       default:
         return <WhatsApp fontSize="small" />;
     }

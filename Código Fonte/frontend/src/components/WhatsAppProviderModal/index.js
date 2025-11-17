@@ -32,7 +32,7 @@ import {
 } from "@material-ui/core";
 import {
   WhatsApp,
-  Hub,
+  Router,
   ExpandMore,
   Visibility,
   VisibilityOff,
@@ -377,7 +377,7 @@ const WhatsAppProviderModal = ({ open, onClose, providerId, onSuccess }) => {
           <Tab
             label="Notifica-me Hub"
             disabled={!providerType && currentTab !== 2}
-            icon={<Hub />}
+            icon={<Router />}
           />
         </Tabs>
 
@@ -428,7 +428,7 @@ const WhatsAppProviderModal = ({ open, onClose, providerId, onSuccess }) => {
                       }`}
                       onClick={() => handleProviderTypeSelect('hub')}
                     >
-                      <Hub className={classes.providerTypeIcon} color="primary" />
+                      <Router className={classes.providerTypeIcon} color="primary" />
                       <Typography variant="h6">Notifica-me Hub</Typography>
                       <Typography variant="body2" color="textSecondary">
                         API Oficial (Pago)
@@ -649,7 +649,7 @@ const WhatsAppProviderModal = ({ open, onClose, providerId, onSuccess }) => {
         <TabPanel value={currentTab} index={2}>
           <div className={classes.form}>
             <Typography className={classes.sectionTitle}>
-              <Hub />
+              <Router />
               Configurações Notifica-me Hub
             </Typography>
 

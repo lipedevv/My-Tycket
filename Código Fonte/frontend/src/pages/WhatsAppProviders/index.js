@@ -61,7 +61,7 @@ import {
   Brightness4,
   Brightness7,
   WhatsApp,
-  Hub,
+  Router,
   Security,
   CloudQueue,
   Sync,
@@ -599,7 +599,7 @@ const WhatsAppProviders = () => {
       case 'baileys':
         return <WhatsApp />;
       case 'hub':
-        return <Hub />;
+        return <Router />;
       default:
         return <WhatsApp />;
     }
@@ -841,7 +841,7 @@ const WhatsAppProviders = () => {
                   color="primary"
                 >
                   <Box display="flex" alignItems="center">
-                    <Hub style={{ marginRight: 8 }} />
+                    <Router style={{ marginRight: 8 }} />
                     Notifica-me Hub
                   </Box>
                 </Badge>
