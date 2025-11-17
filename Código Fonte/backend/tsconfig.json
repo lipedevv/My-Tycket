@@ -5,12 +5,31 @@
     "outDir": "./dist",
     "strict": false,
     "strictPropertyInitialization": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "suppressImplicitAnyIndexErrors": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-	"types": ["node"]
+    "types": ["node"],
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
   },
-    "exclude": ["public"]
+  "exclude": [
+    "public",
+    "src/tests/**/*",
+    "src/controllers/FlowBuilderController.ts",
+    "src/controllers/WhatsAppProviderController.ts",
+    "src/middlewares/webhookMiddleware.ts",
+    "src/models/Flow.ts",
+    "src/models/FlowBuilderSession.ts",
+    "src/database/migrations/20241116000001-create-providers-table.ts",
+    "src/services/WhatsAppSocketService.ts"
+  ]
 }

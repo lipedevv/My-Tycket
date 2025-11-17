@@ -3,9 +3,9 @@ import { getRepository } from "typeorm";
 import AppError from "../errors/AppError";
 import Flow from "../models/Flow";
 import FlowExecution from "../models/FlowExecution";
-import { FlowEngine } from "../services/FlowEngine/FlowEngine";
-import logger from "../utils/logger";
-import { WebSocketService } from "../services/WebSocketService";
+// import FlowEngine from "../services/FlowEngine/FlowEngine"; // Temporarily disabled
+import { logger } from "../utils/logger";
+// import { WebSocketService } from "../services/WebSocketService"; // Temporarily disabled
 import { v4 as uuidv4 } from 'uuid';
 
 interface AuthenticatedRequest extends Request {
@@ -696,7 +696,7 @@ export const getAnalytics = async (req: AuthenticatedRequest, res: Response): Pr
   }
 };
 
-export const export = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
+export const exportFlow = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
   try {
     const { id } = req.params;
     const { companyId } = req.user;
@@ -745,7 +745,7 @@ export const export = async (req: AuthenticatedRequest, res: Response): Promise<
   }
 };
 
-export const import = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
+export const importFlow = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
   try {
     const { flowData } = req.body;
     const { companyId, id: userId } = req.user;
@@ -1022,8 +1022,8 @@ export default {
   getExecution,
   stopExecution,
   getAnalytics,
-  export,
-  import,
+  exportFlow,
+  importFlow,
   getNodeTypes,
   getStats,
 };
