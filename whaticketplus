@@ -975,11 +975,8 @@ check_ports() {
     echo ""
 }
 
-# Função para detectar automaticamente o repositório Git (baseado no Instalador 2)
+# Função para detectar automaticamente o repositório Git (silenciosa)
 detect_git_repository() {
-    print_banner
-    printf "${WHITE} 📂 Detectando repositório Git...${NC}\n"
-
     # Tentar detectar automaticamente o repositório Git atual
     if [[ -d ".git" ]]; then
         # Pegar a URL do repositório atual
@@ -993,18 +990,13 @@ detect_git_repository() {
 
             # Usar automaticamente o repositório detectado
             GIT_REPO="$detected_git"
-            printf "${GREEN} ✅ Repositório Git detectado e selecionado automaticamente:${NC}\n"
-            printf "   📂 ${BLUE}$GIT_REPO${NC}\n\n"
-            sleep 2
             return 0
         fi
     fi
 
     # Se não detectou, usar padrão
     GIT_REPO="https://github.com/DEV7Kadu/My-Tycket.git"
-    printf "${YELLOW} ⚠️ Usando repositório padrão:${NC}\n"
-    printf "   📂 ${BLUE}$GIT_REPO${NC}\n\n"
-    sleep 2
+    return 0
 }
 
 # Função para coletar configurações do usuário
@@ -1013,13 +1005,15 @@ collect_config() {
     printf "${WHITE} ⚙️  Configurações do Sistema${NC}\n"
     echo "=============================================="
 
-    # Detectar repositório Git automaticamente
-    detect_git_repository
-
-    # URL Base
-    echo -e "${YELLOW}🌐 Informe a URL base para o sistema:${NC}"
+    # Informações do domínio (mais importante primeiro)
+    echo -e "${YELLOW}🌐 Informe o domínio onde o sistema vai rodar:${NC}"
     echo -e "${BLUE}Exemplo: seu-dominio.com${NC}"
-    read -p "URL Base: " BASE_URL
+    read -p "Domínio: " BASE_URL
+
+    if [[ -z "$BASE_URL" ]]; then
+        BASE_URL="localhost"
+        echo -e "${YELLOW}⚠️  Usando padrão: localhost${NC}"
+    fi
 
     if [[ -z "$BASE_URL" ]]; then
         BASE_URL="localhost"
@@ -1077,10 +1071,13 @@ collect_config() {
         echo -e "${YELLOW}⚠️  Usando padrão: admin@${BASE_URL}${NC}"
     fi
 
+    # Detectar repositório Git silenciosamente (só se for diferente)
+    detect_git_repository
+
     # Confirmar configurações
     echo ""
     echo -e "${GREEN} 📋 Resumo das configurações:${NC}"
-    echo -e "   🌐 URL Base: ${CYAN}${BASE_URL}${NC}"
+    echo -e "   🌐 Domínio: ${CYAN}${BASE_URL}${NC}"
     echo -e "   🎨 Frontend URL: ${CYAN}${FRONTEND_URL}${NC}"
     echo -e "   🔗 Backend URL: ${CYAN}${BACKEND_URL}${NC}"
     echo -e "   🔌 Backend Port: ${CYAN}${BACKEND_PORT}${NC}"
@@ -1089,6 +1086,11 @@ collect_config() {
     echo -e "   📦 Redis Port: ${CYAN}${REDIS_PORT}${NC}"
     echo -e "   🐳 Docker Daemon Port: ${CYAN}${DOCKER_PORT}${NC}"
     echo -e "   📧 Email SSL: ${CYAN}${SSL_EMAIL}${NC}"
+
+    # Mostrar repositório Git só se for diferente do padrão
+    if [[ "$GIT_REPO" != "https://github.com/DEV7Kadu/My-Tycket.git" ]]; then
+        echo -e "   📂 Repositório: ${CYAN}${GIT_REPO}${NC}"
+    fi
     echo ""
     read -p "Confirmar configurações? (s/n): " CONFIRM
 
