@@ -650,12 +650,26 @@ frontend_node_dependencies
 frontend_node_build
 frontend_start_pm2
 
-# 9. Network
+# 9. Network (Configurar Nginx PRIMEIRO)
 echo ""
 print_banner
-printf "${WHITE} 🌐 Configurando rede e SSL...${GRAY_LIGHT}\n"
+printf "${WHITE} 🌐 Configurando rede...${GRAY_LIGHT}\n"
 system_nginx_conf
+
+# 10. Configurar server blocks do Nginx ANTES do Certbot
+echo ""
+print_banner
+printf "${WHITE} 🌐 Configurando server blocks Nginx...${GRAY_LIGHT}\n"
+backend_nginx_setup
+frontend_nginx_setup
+
+# 11. Reiniciar Nginx para aplicar as configurações
 system_nginx_restart
+
+# 12. AGORA configurar SSL com Certbot
+echo ""
+print_banner
+printf "${WHITE} 🔒 Configurando SSL com Certbot...${GRAY_LIGHT}\n"
 system_certbot_setup
 
 # 10. Scripts de manutenção
