@@ -176,7 +176,7 @@ const WhatsAppProviderModal = ({ open, onClose, providerId, onSuccess }) => {
       if (!providerId || !open) return;
 
       try {
-        setLoading(true);
+        setSaving(true);
         const { data } = await api.get(`/whatsapp-provider/${providerId}`);
 
         setFormData({
@@ -209,7 +209,7 @@ const WhatsAppProviderModal = ({ open, onClose, providerId, onSuccess }) => {
       } catch (err) {
         toastError(err);
       } finally {
-        setLoading(false);
+        setSaving(false);
       }
     };
 
