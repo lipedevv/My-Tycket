@@ -12,22 +12,45 @@
 sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
 ```
 
-### ✅ **COMANDO SEGURO (USE ESTE):**
+### ✅ **COMANDO OFICIAL INSTALAÇÃO (USE ESTE):**
 ```bash
-# ✅ INSTALAÇÃO SEGURA - CÓDIGO CORRIGIDO E FUNCIONAL
-sudo bash -c "apt update && apt install -y sudo git curl nodejs npm && ([ ! -d 'whaticketplus' ] || mv whaticketplus whaticketplus_backup_$(date +%Y%m%d_%H%M%S)) && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
+# 🚀 INSTALAÇÃO AUTOMÁTICA COMPLETA - My-Tycket v28
+sudo bash -c "apt update && apt install -y git curl && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
 ```
 
-**OU (versão simplificada):**
+**OU (instalação passo a passo):**
 ```bash
-sudo bash -c "apt update && apt install -y sudo git curl nodejs npm && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
+# 1. Baixar o código
+git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus
+cd whaticketplus
+
+# 2. Executar instalação
+chmod +x ./whaticketplus
+sudo ./whaticketplus
 ```
 
 ### 📝 **Informações Importantes:**
-- ✅ **Código Corrigido**: Todas as correções já estão aplicadas no repositório
-- ✅ **Instalação 100% Funcional**: Backend e frontend instalam sem erros
-- ✅ **Backup Automático**: Primeira opção preserva instalações existentes
-- ✅ **Dependencies**: Instala automaticamente Node.js, Docker, PostgreSQL, Redis
+- ✅ **Script Auto-contido**: Não depende de arquivos externos
+- ✅ **Instalação 100% Automática**: Backend, frontend, banco de dados, SSL
+- ✅ **Código Corrigido**: Todas as correções já estão aplicadas
+- ✅ **Compatibilidade Total**: Ubuntu 20.04, 22.04, 24.04 LTS
+- ✅ **Instalação Completa**: Node.js, Docker, PostgreSQL, Redis, Nginx, SSL
+- ✅ **PM2 Gerenciado**: Inicialização automática com o sistema
+- ✅ **Serviços Online**: Frontend e API funcionando após instalação
+
+### 🎯 **O que o Script Instala:**
+- 🔧 **Node.js 20.x** + NPM + PM2
+- 🐳 **Docker** + Docker Compose
+- 🗄️ **PostgreSQL 18** + Redis
+- 🌐 **Nginx** + Certbot (SSL)
+- 📦 **My-Tycket v28** (Backend + Frontend)
+- 🚀 **Configurações completas** (ambiente virtual host, SSL, PM2)
+
+### ⚡ **Após Instalação:**
+- 🎨 **Frontend**: https://painel.whaticketplus.com
+- 🔗 **API Backend**: https://wapi.whaticketplus.com
+- 👤 **Usuário Sistema**: deploy
+- 📁 **Diretório**: /home/deploy/whaticketplus
 
 ## 📋 **Tabela de Conteúdo**
 

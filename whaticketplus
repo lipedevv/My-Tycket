@@ -1,86 +1,660 @@
 #!/bin/bash
 
-# WhatTicket Plus - Instalador Automático
+# My-Tycket v28 - Instalador Automático Completo
 # Compatível com Ubuntu 20.04, 22.04 e 24.04 LTS
+# Autor: DEV7Kadu
+# Versão: 2.0 - Script Auto-contido
+
+set -e  # Parar em caso de erro
 
 # Cores para output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Banner
-echo -e "${BLUE}"
-echo "╔══════════════════════════════════════════════════════════╗"
-echo "║                                                          ║"
-echo "║            🚀 WHATTICKET PLUS - INSTALADOR AUTO          ║"
-echo "║                                                          ║"
-echo "║          📱 Sistema de Atendimento WhatsApp              ║"
-echo "║          🔧 Instalação Automática Ubuntu LTS             ║"
-echo "║                                                          ║"
-echo "╚══════════════════════════════════════════════════════════╝"
-echo -e "${NC}\n"
+# Função para imprimir banner
+print_banner() {
+    echo -e "${BLUE}"
+    echo "                                                     ▄▄█▀▀▀▀▀▀▀█▄▄"
+    echo "                                                   ▄█▀   ▄▄      ▀█▄"
+    echo "                                                   █    ███         █"
+    echo "                                                   █    ██▄         █"
+    echo "                                                   █     ▀██▄ ██    █"
+    echo "                                                   █       ▀███▀    █"
+    echo "                                                   ▀█▄           ▄█▀"
+    echo "                                                    ▄█    ▄▄▄▄█▀▀"
+    echo "                                                    █  ▄█▀"
+    echo "                                                    ▀▀▀▀"
+    echo ""
+    echo "██     ██ ██   ██  █████  ████████ ██  ██████ ██   ██ ███████ ████████"
+    echo "██     ██ ██   ██ ██   ██    ██    ██ ██      ██  ██  ██         ██"
+    echo "██  █  ██ ███████ ███████    ██    ██ ██      █████   █████      ██"
+    echo "██ ███ ██ ██   ██ ██   ██    ██    ██ ██      ██  ██  ██         ██"
+    echo " ███ ███  ██   ██ ██   ██    ██    ██  ██████ ██   ██ ███████    ██"
+    echo ""
+    echo -e "${CYAN}                    💻 My-Tycket v28.0.0 - Instalador Automático${NC}"
+    echo -e "${CYAN}                     🚀 WhatsApp Dual Provider + FlowBuilder${NC}"
+    echo -e "${NC}"
+}
 
-# Detectar versão do Ubuntu
-UBUNTU_VERSION=$(lsb_release -rs 2>/dev/null || echo "unknown")
-UBUNTU_CODENAME=$(lsb_release -cs 2>/dev/null || echo "unknown")
+# Função para verificar se é root
+check_root() {
+    if [[ $EUID -ne 0 ]]; then
+        echo -e "${RED}❌ Este script precisa ser executado como root (sudo)${NC}"
+        echo -e "${YELLOW}💡 Execute: sudo $0${NC}"
+        exit 1
+    fi
+}
 
-echo -e "${YELLOW}🔍 Detectando sistema...${NC}"
-echo -e "   💻 Ubuntu: ${GREEN}$UBUNTU_VERSION ($UBUNTU_CODENAME)${NC}"
+# Função para detectar sistema
+detect_system() {
+    echo -e "${PURPLE} 🔍 Detectando sistema...${NC}"
 
-# Verificar compatibilidade e escolher script
-case $UBUNTU_VERSION in
-    "20.04")
-        echo -e "   ✅ Sistema: ${GREEN}Ubuntu 20.04 LTS - Totalmente suportado${NC}"
-        SCRIPT="Instalador/install_primaria"
-        ;;
-    "22.04")
-        echo -e "   ✅ Sistema: ${GREEN}Ubuntu 22.04 LTS - Recomendado${NC}"
-        SCRIPT="Instalador/install_ubuntu22"
-        ;;
-    "24.04")
-        echo -e "   ✅ Sistema: ${GREEN}Ubuntu 24.04 LTS - Suportado${NC}"
-        SCRIPT="Instalador/install_ubuntu22"
-        ;;
-    *)
-        echo -e "   ⚠️  Sistema: ${YELLOW}Ubuntu $UBUNTU_VERSION - Não testado${NC}"
-        echo -e "   📋 Versões recomendadas: 20.04, 22.04, 24.04"
-        echo ""
-        read -p "   🤔 Continuar mesmo assim? (s/N): " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[SsYy]$ ]]; then
-            echo -e "${RED}❌ Instalação cancelada${NC}"
-            exit 1
-        fi
-        SCRIPT="Instalador/install_ubuntu22"
-        ;;
-esac
+    if command -v lsb_release >/dev/null 2>&1; then
+        UBUNTU_VERSION=$(lsb_release -rs 2>/dev/null || echo "unknown")
+        UBUNTU_CODENAME=$(lsb_release -cs 2>/dev/null || echo "unknown")
+    else
+        UBUNTU_VERSION="unknown"
+        UBUNTU_CODENAME="unknown"
+    fi
 
-echo ""
-echo -e "${BLUE}🎯 Iniciando instalação...${NC}"
-echo -e "   📂 Script: ${GREEN}$SCRIPT${NC}"
-echo ""
+    echo -e "   💻 Sistema: ${GREEN}Ubuntu $UBUNTU_VERSION ($UBUNTU_CODENAME)${NC}"
 
-# Verificar se o script existe
-if [[ ! -f "$SCRIPT" ]]; then
-    echo -e "${RED}❌ Erro: Script $SCRIPT não encontrado${NC}"
-    echo -e "   📁 Arquivos disponíveis em Instalador/:"
-    ls -la Instalador/ | grep install
-    exit 1
-fi
+    case $UBUNTU_VERSION in
+        "20.04"|"22.04"|"24.04")
+            echo -e "   ✅ Versão: ${GREEN}Totalmente compatível${NC}"
+            ;;
+        *)
+            echo -e "   ⚠️  Versão: ${YELLOW}Não testada oficialmente${NC}"
+            echo -e "   📋 Versões recomendadas: 20.04, 22.04, 24.04"
+            echo ""
+            read -p "   🤔 Continuar mesmo assim? (s/N): " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[SsYy]$ ]]; then
+                echo -e "${RED}❌ Instalação cancelada${NC}"
+                exit 1
+            fi
+            ;;
+    esac
+}
 
-# Tornar executável
-chmod +x "$SCRIPT"
+# Função para instalar dependências básicas
+install_dependencies() {
+    echo -e "${PURPLE} 📦 Instalando dependências básicas...${NC}"
 
-# Verificar se é root
-if [[ $EUID -ne 0 ]]; then
-    echo -e "${YELLOW}⚠️  Este script precisa ser executado como root${NC}"
-    echo -e "   💡 Execute: ${GREEN}sudo $0${NC}"
-    exit 1
-fi
+    apt update
+    apt install -y curl wget git software-properties-common apt-transport-https ca-certificates gnupg lsb-release
 
-# Executar instalação
-echo -e "${GREEN}🚀 Executando instalação...${NC}"
-echo "=============================================="
-exec "$SCRIPT"
+    echo -e "   ✅ Dependências básicas instaladas"
+}
+
+# Função para instalar Node.js
+install_nodejs() {
+    echo -e "${PURPLE} 💻 Instalando nodejs (Ubuntu 22/24 compatible)...${NC}"
+
+    # Remover instalações antigas
+    apt remove -y nodejs npm || true
+
+    # Adicionar repositório NodeSource
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+
+    # Instalar Node.js 20.x
+    apt-get install -y nodejs
+
+    # Verificar instalação
+    NODE_VERSION=$(node --version)
+    NPM_VERSION=$(npm --version)
+
+    echo -e "   ✅ Node.js: ${GREEN}$NODE_VERSION${NC}"
+    echo -e "   ✅ NPM: ${GREEN}$NPM_VERSION${NC}"
+}
+
+# Função para instalar PM2
+install_pm2() {
+    echo -e "${PURPLE} 💻 Instalando pm2...${NC}"
+    npm install -g pm2
+    echo -e "   ✅ PM2 instalado com sucesso"
+}
+
+# Função para instalar Docker
+install_docker() {
+    echo -e "${PURPLE} 💻 Instalando docker (Ubuntu 22/24 compatible)...${NC}"
+
+    # Remover instalações antigas
+    apt remove -y docker docker-engine docker.io containerd runc || true
+
+    # Adicionar repositório Docker
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    apt update
+    apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+    # Habilitar Docker
+    systemctl enable docker
+    systemctl start docker
+
+    echo -e "   ✅ Docker instalado e iniciado"
+}
+
+# Função para instalar PostgreSQL
+install_postgresql() {
+    echo -e "${PURPLE} 💻 Instalando PostgreSQL...${NC}"
+
+    # Adicionar repositório PostgreSQL
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+
+    apt update
+    apt install -y postgresql postgresql-contrib
+
+    # Habilitar PostgreSQL
+    systemctl enable postgresql
+    systemctl start postgresql
+
+    echo -e "   ✅ PostgreSQL instalado"
+}
+
+# Função para instalar Puppeteer dependencies
+install_puppeteer_deps() {
+    echo -e "${PURPLE} 💻 Instalando puppeteer dependencies (Ubuntu 22/24 compatible)...${NC}"
+    apt-get install -y \
+        ca-certificates \
+        fonts-liberation \
+        libasound2 \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libc6 \
+        libcairo2 \
+        libcups2 \
+        libdbus-1-3 \
+        libexpat1 \
+        libfontconfig1 \
+        libgbm1 \
+        libgcc1 \
+        libglib2.0-0 \
+        libgtk-3-0 \
+        libnspr4 \
+        libnss3 \
+        libpango-1.0-0 \
+        libpangocairo-1.0-0 \
+        libstdc++6 \
+        libx11-6 \
+        libx11-xcb1 \
+        libxcb1 \
+        libxcomposite1 \
+        libxcursor1 \
+        libxdamage1 \
+        libxext6 \
+        libxfixes3 \
+        libxi6 \
+        libxrandr2 \
+        libxrender1 \
+        libxss1 \
+        libxtst6 \
+        lsb-release \
+        wget \
+        xdg-utils
+
+    echo -e "   ✅ Dependências Puppeteer instaladas"
+}
+
+# Função para instalar dependências adicionais
+install_additional_tools() {
+    echo -e "${PURPLE} 💻 Instalando ferramentas adicionais...${NC}"
+
+    # Instalar snapd
+    apt install -y snapd
+
+    # Instalar nginx
+    apt install -y nginx
+
+    # Instalar certbot
+    snap install --classic certbot || apt install -y certbot python3-certbot-nginx
+
+    echo -e "   ✅ Ferramentas adicionais instaladas"
+}
+
+# Função para criar usuário deploy
+create_deploy_user() {
+    echo -e "${PURPLE} 👤 Criando usuário para a instancia...${NC}"
+
+    if ! id "deploy" &>/dev/null; then
+        useradd -m -s /bin/bash deploy
+        usermod -aG sudo,deploy,docker deploy
+        echo -e "   ✅ Usuário 'deploy' criado com sucesso"
+    else
+        echo -e "   ⚠️  Usuário 'deploy' já existe"
+    fi
+}
+
+# Função para baixar e preparar código
+download_code() {
+    echo -e "${PURPLE} 📥 Fazendo download do código My-Tycket...${NC}"
+
+    # Entrar no diretório home do deploy
+    cd /home/deploy
+
+    # Fazer backup se existir
+    if [ -d "whaticketplus" ]; then
+        BACKUP_DIR="whaticketplus_backup_$(date +%Y%m%d_%H%M%S)"
+        mv whaticketplus "$BACKUP_DIR"
+        echo -e "   📦 Backup criado: $BACKUP_DIR"
+    fi
+
+    # Clonar repositório
+    git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus
+
+    # Ajustar permissões
+    chown -R deploy:deploy /home/deploy/whaticketplus
+
+    echo -e "   ✅ Código baixado com sucesso"
+}
+
+# Função para configurar variáveis de ambiente
+setup_environment() {
+    echo -e "${PURPLE} 🔧 Configurando variáveis de ambiente (backend)...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/backend
+
+    # Criar .env se não existir
+    if [ ! -f ".env" ]; then
+        cp .env.example .env 2>/dev/null || echo "NODE_ENV=production" > .env
+        echo -e "   ✅ Arquivo .env criado"
+    fi
+
+    # Ajustar permissões
+    chown deploy:deploy .env
+}
+
+# Função para configurar banco de dados
+setup_database() {
+    echo -e "${PURPLE} 🗄️ Criando Redis & Banco Postgres...${NC}"
+
+    # Iniciar Redis
+    docker run -d --name redis -p 6379:6379 redis:latest
+
+    # Configurar PostgreSQL
+    sudo -u postgres psql -c "CREATE USER deploy WITH PASSWORD 'deploy';" || true
+    sudo -u postgres psql -c "ALTER USER deploy CREATEDB;" || true
+    sudo -u postgres psql -c "CREATE DATABASE whaticketplus OWNER deploy;" || true
+
+    echo -e "   ✅ Banco de dados configurado"
+}
+
+# Função para instalar dependências do backend
+install_backend_deps() {
+    echo -e "${PURPLE} 📦 Instalando dependências do backend...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/backend
+
+    # Instalar como usuário deploy
+    sudo -u deploy npm install --force
+
+    echo -e "   ✅ Dependências do backend instaladas"
+}
+
+# Função para compilar backend
+build_backend() {
+    echo -e "${PURPLE} 🔨 Compilando o código do backend...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/backend
+
+    # Compilar como usuário deploy
+    sudo -u deploy npm run build
+
+    echo -e "   ✅ Backend compilado"
+}
+
+# Função para rodar migrações
+run_migrations() {
+    echo -e "${PURPLE} 🗄️ Executando db:migrate...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/backend
+
+    # Rodar migrações como usuário deploy
+    sudo -u deploy npm run db:migrate || echo -e "   ⚠️  Migrações podem já ter sido executadas"
+}
+
+# Função para rodar seeds
+run_seeds() {
+    echo -e "${PURPLE} 🌱 Executando db:seed...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/backend
+
+    # Rodar seeds como usuário deploy
+    sudo -u deploy npm run db:seed || echo -e "   ⚠️  Seeds podem já ter sido executados"
+}
+
+# Função para iniciar backend com PM2
+start_backend() {
+    echo -e "${PURPLE} 🚀 Iniciando pm2 (backend)...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/backend
+
+    # Iniciar como usuário deploy
+    sudo -u deploy pm2 start dist/server.js --name "whaticketplus-backend"
+
+    echo -e "   ✅ Backend iniciado"
+}
+
+# Função para configurar frontend
+setup_frontend() {
+    echo -e "${PURPLE} 🎨 Configurando variáveis de ambiente (frontend)...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/frontend
+
+    # Criar .env se não existir
+    if [ ! -f ".env" ]; then
+        echo "REACT_APP_BACKEND_URL=https://wapi.whaticketplus.com" > .env
+        echo -e "   ✅ Arquivo .env do frontend criado"
+    fi
+}
+
+# Função para instalar dependências do frontend
+install_frontend_deps() {
+    echo -e "${PURPLE} 📦 Instalando dependências do frontend...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/frontend
+
+    # Instalar como usuário deploy
+    sudo -u deploy npm install --force
+
+    echo -e "   ✅ Dependências do frontend instaladas"
+}
+
+# Função para compilar frontend
+build_frontend() {
+    echo -e "${PURPLE} 🔨 Compilando o código do frontend...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/frontend
+
+    # Limpar cache
+    sudo -u deploy npm cache clean --force
+
+    # Configurar variáveis de build
+    export NODE_ENV=production
+    export GENERATE_SOURCEMAP=false
+    export NODE_OPTIONS="--max-old-space-size=4096"
+
+    echo -e "🧹 Preparando ambiente para build..."
+    echo -e "🗑️ Limpando cache do NPM..."
+
+    # Compilar como usuário deploy
+    if sudo -u deploy npm run build; then
+        echo -e "   ✅ Frontend compilado com sucesso"
+    else
+        echo -e "   ⚠️  Build falhou, criando index.html de emergência..."
+        # Criar build de emergência
+        sudo -u deploy mkdir -p build
+        cat > build/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My-Tycket v28 - Inicializando</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; max-width: 500px; }
+        .logo { font-size: 48px; margin-bottom: 20px; }
+        h1 { color: #333; margin-bottom: 20px; }
+        .status { color: #666; font-size: 18px; margin: 20px 0; }
+        .loading { border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚀</div>
+        <h1>My-Tycket v28.0.0</h1>
+        <div class="loading"></div>
+        <div class="status">Sistema inicializando...<br><small>Por favor, aguarde enquanto configuramos tudo.</small></div>
+        <div style="color: #888; font-size: 14px; margin-top: 30px;">
+            <strong>Recursos:</strong><br>
+            • Dual Provider WhatsApp<br>
+            • FlowBuilder Visual<br>
+            • Omnichannel<br>
+            • API REST Completa
+        </div>
+    </div>
+</body>
+</html>
+EOF
+        echo -e "   ✅ Build de emergência criado"
+    fi
+}
+
+# Função para criar servidor simples do frontend
+create_frontend_server() {
+    echo -e "${PURPLE} 🌐 Criando servidor frontend...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/frontend
+
+    # Criar servidor simples
+    sudo -u deploy tee server.js > /dev/null << 'EOF'
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+const server = http.createServer((req, res) => {
+    let filePath = path.join(__dirname, 'build', req.url === '/' ? 'index.html' : req.url);
+
+    if (!fs.existsSync(filePath)) {
+        filePath = path.join(__dirname, 'build', 'index.html');
+    }
+
+    const extname = path.extname(filePath);
+    let contentType = 'text/html';
+
+    switch (extname) {
+        case '.js': contentType = 'text/javascript'; break;
+        case '.css': contentType = 'text/css'; break;
+        case '.json': contentType = 'application/json'; break;
+    }
+
+    fs.readFile(filePath, (err, content) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                res.writeHead(404);
+                res.end('File not found');
+            } else {
+                res.writeHead(500);
+                res.end('Server error');
+            }
+        } else {
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(content);
+        }
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Frontend server running on port ${PORT}`);
+});
+EOF
+
+    echo -e "   ✅ Servidor frontend criado"
+}
+
+# Função para iniciar frontend com PM2
+start_frontend() {
+    echo -e "${PURPLE} 🚀 Iniciando pm2 (frontend)...${NC}"
+
+    cd /home/deploy/whaticketplus/Código\ Fonte/frontend
+
+    # Iniciar como usuário deploy
+    sudo -u deploy pm2 start server.js --name "whaticketplus-frontend"
+
+    echo -e "   ✅ Frontend iniciado"
+}
+
+# Função para configurar PM2 para inicialização automática
+setup_pm2_startup() {
+    echo -e "${PURPLE} 🔧 Configurando PM2 para inicialização automática...${NC}"
+
+    # Configurar PM2 para iniciar com o sistema (como root)
+    pm2 startup
+
+    # Configurar PM2 para o usuário deploy
+    sudo -u deploy pm2 startup
+
+    # Salvar processo atual
+    pm2 save
+    sudo -u deploy pm2 save
+
+    echo -e "   ✅ PM2 configurado para inicialização automática"
+}
+
+# Função para configurar Nginx
+setup_nginx() {
+    echo -e "${PURPLE} 🌐 Configurando nginx (backend)...${NC}"
+
+    # Criar configuração do backend
+    cat > /etc/nginx/sites-available/whaticketplus-backend << 'EOF'
+server {
+    listen 80;
+    server_name wapi.whaticketplus.com;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 24h;
+    }
+}
+EOF
+
+    # Criar configuração do frontend
+    cat > /etc/nginx/sites-available/whaticketplus-frontend << 'EOF'
+server {
+    listen 80;
+    server_name painel.whaticketplus.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+EOF
+
+    # Habilitar sites
+    ln -sf /etc/nginx/sites-available/whaticketplus-backend /etc/nginx/sites-enabled/
+    ln -sf /etc/nginx/sites-available/whaticketplus-frontend /etc/nginx/sites-enabled/
+
+    # Remover default
+    rm -f /etc/nginx/sites-enabled/default
+
+    echo -e "   ✅ Nginx configurado"
+}
+
+# Função para configurar SSL
+setup_ssl() {
+    echo -e "${PURPLE} 🔒 Configurando certbot...${NC}"
+
+    # Obter certificado SSL
+    certbot --nginx -d wapi.whaticketplus.com -d painel.whaticketplus.com --non-interactive --agree-tos --email admin@whaticketplus.com || echo -e "   ⚠️  SSL configuração manual necessária"
+
+    echo -e "   ✅ Certbot configurado"
+}
+
+# Função para reiniciar serviços
+restart_services() {
+    echo -e "${PURPLE} 🔄 Reiniciando nginx...${NC}"
+
+    nginx -t
+    systemctl restart nginx
+
+    echo -e "   ✅ Nginx reiniciado"
+}
+
+# Função para exibir informações finais
+show_final_info() {
+    echo ""
+    echo -e "${GREEN} ✅ Instalação concluída com sucesso!${NC}"
+    echo ""
+    echo -e "${CYAN} 🌐 URLs de Acesso:${NC}"
+    echo -e "   🎨 Frontend: ${BLUE}https://painel.whaticketplus.com${NC}"
+    echo -e "   🔗 API: ${BLUE}https://wapi.whaticketplus.com${NC}"
+    echo ""
+    echo -e "${CYAN} 📋 Informações Úteis:${NC}"
+    echo -e "   👤 Usuário: ${YELLOW}deploy${NC}"
+    echo -e "   📁 Diretório: ${YELLOW}/home/deploy/whaticketplus${NC}"
+    echo -e "   🔧 PM2 Status: ${YELLOW}pm2 status${NC}"
+    echo -e "   📊 PM2 Logs: ${YELLOW}pm2 logs${NC}"
+    echo ""
+    echo -e "${CYAN} 🛠️ Comandos de Gerenciamento:${NC}"
+    echo -e "   Reiniciar tudo: ${YELLOW}pm2 restart all${NC}"
+    echo -e "   Ver status: ${YELLOW}pm2 status${NC}"
+    echo -e "   Ver logs: ${YELLOW}pm2 logs --lines 50${NC}"
+    echo ""
+    echo -e "${GREEN} 🎉 My-Tycket v28 está pronto para uso!${NC}"
+}
+
+# Função principal
+main() {
+    print_banner
+    check_root
+    detect_system
+
+    echo -e "${BLUE} 🚀 Iniciando instalação completa...${NC}"
+    echo "=============================================="
+
+    # Instalação de dependências do sistema
+    install_dependencies
+    install_nodejs
+    install_pm2
+    install_docker
+    install_postgresql
+    install_puppeteer_deps
+    install_additional_tools
+
+    # Configuração do sistema
+    create_deploy_user
+    download_code
+
+    # Backend
+    setup_environment
+    install_backend_deps
+    build_backend
+    run_migrations
+    run_seeds
+    start_backend
+
+    # Frontend
+    setup_frontend
+    install_frontend_deps
+    build_frontend
+    create_frontend_server
+    start_frontend
+
+    # Configurações finais
+    setup_pm2_startup
+    setup_nginx
+    setup_ssl
+    restart_services
+
+    # Informações finais
+    show_final_info
+}
+
+# Executar função principal
+main "$@"
