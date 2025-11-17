@@ -1,6 +1,7 @@
-# 🚀 My-Tycket v28.0.0 - WhatsApp Dual Provider com FlowBuilder
+# 🚀 My-Tycket v28.0.1 - WhatsApp Dual Provider com FlowBuilder
 
-**📅 Última Atualização: 17/11/2025 - Versão 3.0 Super Enhanced**
+**📅 Última Atualização: 17/11/2025 - Versão 3.0.1 Super Enhanced**
+**🔧 Correções: Dependências NPM + Configuração de Portas**
 **🔧 Baseado no Instalador 2 Pro - Script Modular Avançado**
 
 ## ⚠️ **AVISO CRÍTICO DE SEGURANÇA - INSTALAÇÃO SEGURA**
@@ -583,6 +584,17 @@ sudo -u postgres psql -l
 
 # Testar connection
 node -e "const {Client} = require('pg'); new Client({user:'postgres',host:'localhost'}).connect()"
+```
+
+#### NPM Dependencies Error (ERESOLVE)
+
+**✅ CORREÇÃO AUTOMÁTICA INCLUÍDA v3.0.1:**
+```bash
+# O sistema agora resolve automaticamente conflitos ts-node vs typeorm
+# ts-node atualizado para ^10.7.0 (compatível com typeorm@0.3.27)
+# Se ainda ocorrer erro ERESOLVE:
+cd /home/deploy/whaticketplus/backend
+npm install --legacy-peer-deps
 ```
 
 #### WhatsApp Provider Not Working
