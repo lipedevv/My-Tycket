@@ -8,16 +8,16 @@
 
 **NÃO USE** o comando original que pode quebrar sistemas existentes!
 
-### ❌ **COMANDO PERIGOSO (NÃO USE):**
+### ❌ **COMANDO ANTIGO (NÃO USE - Substituído pelo Instalador Unificado):**
 ```bash
-# ❌ NÃO FAÇA ISSO - PODE QUEBRAR SISTEMA EXISTENTE!
+# ❌ NÃO FAÇA ISSO - COMANDO ANTIGO SUBSTITUÍDO!
 sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
 ```
 
-### ✅ **COMANDO OFICIAL INSTALAÇÃO (USE ESTE):**
+### 🚀 **COMANDO OFICIAL - INSTALADOR UNIFICADO:**
 ```bash
-# 🚀 INSTALAÇÃO AUTOMÁTICA COMPLETA - My-Tycket v28
-sudo bash -c "apt update && apt install -y git curl && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
+# ✅ COMANDO ÚNICO ATUALIZADO - My-Tycket v28 (Instalador Unificado)
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git curl -y && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./install.sh && sudo ./install.sh"
 ```
 
 **OU (instalação passo a passo):**
@@ -26,9 +26,23 @@ sudo bash -c "apt update && apt install -y git curl && rm -rf whaticketplus && g
 git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus
 cd whaticketplus
 
-# 2. Executar instalação
-chmod +x ./whaticketplus
-sudo ./whaticketplus
+# 2. Executar instalação unificada
+chmod +x ./install.sh
+sudo ./install.sh
+```
+
+**OU Acessar diretamente o instalador:**
+```bash
+# Instalação via instalador unificado
+cd whaticketplus/Instalador
+chmod +x install_unificado
+sudo ./install_unificado
+```
+
+**OU (comando direto sem atalho):**
+```bash
+# Comando direto usando o instalador unificado
+sudo bash -c "apt update && apt upgrade -y && apt install sudo git curl -y && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus/Instalador && chmod +x install_unificado && sudo ./install_unificado"
 ```
 
 ### 🔄 **COMANDOS ALTERNATIVOS (SE O ACIMA FALHAR):**
@@ -44,10 +58,12 @@ sudo bash -c "apt update && apt install -y git curl && curl -fsSL https://raw.gi
 ```
 
 ### 📝 **Informações Importantes:**
-- ✅ **Script Modular Avançado**: Baseado no Instalador 2 Pro
-- ✅ **Banner Profissional**: Interface multi-color avançada
-- ✅ **Segurança Automática**: Geração automática de senhas com OpenSSL
-- ✅ **Detecção Inteligente**: Repositório Git e sistema detectados
+- ✅ **Instalador Unificado**: Único instalador com múltiplos modos (Padrão, Seguro, Atualização, Avançado)
+- ✅ **Backup Automático**: Proteção completa dos dados existentes
+- ✅ **Scripts de Manutenção**: Ferramentas para backup, atualização e correção
+- ✅ **Rollback Automático**: Reversão em caso de problemas
+- ✅ **Validação Pós-instalação**: Verificação automática de funcionamento
+- ✅ **Compatibilidade**: Ubuntu 22/24 LTS
 - ✅ **Compatibilidade Avançada**: Ubuntu 20.04/22.04/24.04 específico
 - ✅ **Verificação Completa**: Sistema pós-instalação integrado
 - ✅ **Instalação 100% Automática**: Backend, frontend, banco de dados, SSL
@@ -130,6 +146,60 @@ A versão 3.0 representa uma reescrita completa do script de instalação, incor
 - ✅ **Safe Installer**: Instalação 100% segura com rollback
 - ✅ **Docker Ready**: Containerização completa
 - ✅ **TypeScript**: Type safety e melhor DX
+
+## 🎯 **Instalador Unificado v2.0**
+
+O novo instalador unificado combina todas as funcionalidades dos instaladores anteriores em uma única ferramenta robusta:
+
+### 📋 **Modos de Instalação Disponíveis**
+
+1. **🚀 Instalação Padrão** - Rápida e otimizada para novas instalações
+2. **🔒 Instalação Segura** - Com backup, validação e rollback automático
+3. **🔄 Atualizar Instalação** - Atualiza sistemas existentes preservando dados
+4. **⚙️ Modo Avançado** - Configuração manual de todas as opções
+
+### 🛡️ **Recursos de Segurança**
+
+- **Backup Automático**: Database, arquivos e configurações
+- **Validação Pós-instalação**: Verificação completa de funcionamento
+- **Rollback Automático**: Reversão em caso de problemas
+- **Detecção de Instalações Existentes**: Proteção contra sobreposição
+- **Scripts de Manutenção**: Ferramentas para backup, atualização e correção
+
+### 🔧 **Scripts de Manutenção Incluídos**
+
+Após a instalação, você terá acesso a:
+- `fix_frontend.sh` - Corrige problemas de build do frontend
+- `backup.sh` - Cria backup completo da instância
+- `update.sh` - Atualiza para versões mais recentes
+- `verify_installation.sh` - Verifica status da instalação
+
+### 📁 **Estrutura de Arquivos**
+
+```
+Instalador/
+├── install_unificado          # Instalador principal (único arquivo)
+├── README.md                  # Documentação completa
+├── lib/                       # Bibliotecas de funções
+├── variables/                 # Variáveis de configuração
+├── utils/                     # Utilitários e ferramentas
+└── config                     # Configurações com senhas
+```
+
+### 🚀 **Como Usar o Instalador Unificado**
+
+```bash
+# Forma mais simples (recomendado)
+git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus
+cd whaticketplus
+sudo ./install.sh
+
+# Ou diretamente
+cd whaticketplus/Instalador
+sudo ./install_unificado
+```
+
+O instalador apresentará um menu interativo para você escolher o modo desejado e configurar as opções.
 
 ## 🔧 **Instalação Segura v3.0**
 
