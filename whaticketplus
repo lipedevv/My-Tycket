@@ -96,21 +96,55 @@ install_dependencies() {
 install_nodejs() {
     echo -e "${PURPLE} 💻 Instalando nodejs (Ubuntu 22/24 compatible)...${NC}"
 
-    # Remover instalações antigas
-    apt remove -y nodejs npm || true
+    # Remover TODAS as instalações antigas para evitar conflitos
+    echo -e "   🗑️ Removendo instalações antigas..."
+    apt remove -y --purge nodejs npm libnode-dev libnode72 || true
+    apt autoremove -y || true
+    apt autoclean || true
 
-    # Adicionar repositório NodeSource
+    # Forçar limpeza de arquivos residuais
+    rm -rf /usr/include/node /usr/local/lib/node_modules /usr/bin/node /usr/bin/npm 2>/dev/null || true
+
+    # Adicionar repositório NodeSource oficial
+    echo -e "   📦 Adicionando repositório NodeSource..."
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 
-    # Instalar Node.js 20.x
-    apt-get install -y nodejs
+    # Atualizar lista de pacotes
+    apt update
+
+    # Instalar Node.js 20.x com tratamento de erro
+    echo -e "   ⬇️ Instalando Node.js 20.x..."
+    if ! apt-get install -y nodejs; then
+        echo -e "   ⚠️  Falha na instalação via APT, tentando método alternativo..."
+
+        # Método alternativo: download direto
+        NODE_VERSION="20.19.5"
+        ARCH="x64"
+        DEB_PACKAGE="node_${NODE_VERSION}-${ARCH}.deb"
+
+        cd /tmp
+        wget "https://deb.nodesource.com/node_${NODE_VERSION}/pool/main/n/nodejs/${DEB_PACKAGE}" || {
+            echo -e "   ❌ Erro no download do Node.js"
+            echo -e "   📋 Por favor, instale manualmente:"
+            echo -e "      curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -"
+            echo -e "      sudo apt-get install -y nodejs"
+            exit 1
+        }
+
+        dpkg -i "$DEB_PACKAGE" || apt install -f -y
+        rm -f "$DEB_PACKAGE"
+    fi
 
     # Verificar instalação
-    NODE_VERSION=$(node --version)
-    NPM_VERSION=$(npm --version)
-
-    echo -e "   ✅ Node.js: ${GREEN}$NODE_VERSION${NC}"
-    echo -e "   ✅ NPM: ${GREEN}$NPM_VERSION${NC}"
+    if command -v node >/dev/null 2>&1; then
+        NODE_VERSION=$(node --version)
+        NPM_VERSION=$(npm --version)
+        echo -e "   ✅ Node.js: ${GREEN}$NODE_VERSION${NC}"
+        echo -e "   ✅ NPM: ${GREEN}$NPM_VERSION${NC}"
+    else
+        echo -e "   ❌ Node.js não foi instalado corretamente"
+        exit 1
+    fi
 }
 
 # Função para instalar PM2
@@ -125,18 +159,45 @@ install_docker() {
     echo -e "${PURPLE} 💻 Instalando docker (Ubuntu 22/24 compatible)...${NC}"
 
     # Remover instalações antigas
-    apt remove -y docker docker-engine docker.io containerd runc || true
+    echo -e "   🗑️ Removendo instalações antigas do Docker..."
+    apt remove -y docker docker-engine docker.io containerd runc docker-compose-plugin || true
+    apt autoremove -y || true
 
-    # Adicionar repositório Docker
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    # Adicionar repositório Docker oficial
+    echo -e "   📦 Adicionando repositório Docker..."
+    if ! curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg; then
+        echo -e "   ⚠️  Falha ao adicionar chave GPG do Docker"
+        return 1
+    fi
+
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
     apt update
-    apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+    # Instalar Docker com retry
+    echo -e "   ⬇️ Instalando Docker..."
+    local DOCKER_RETRY=0
+    while [ $DOCKER_RETRY -lt 3 ]; do
+        if apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin; then
+            echo -e "   ✅ Docker instalado com sucesso"
+            break
+        else
+            DOCKER_RETRY=$((DOCKER_RETRY + 1))
+            echo -e "   ⚠️  Tentativa $DOCKER_RETRY falhou, aguardando..."
+            sleep 5
+            apt update
+        fi
+    done
+
+    if [ $DOCKER_RETRY -eq 3 ]; then
+        echo -e "   ❌ Falha na instalação do Docker após 3 tentativas"
+        echo -e "   📋 Continue manualmente: apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin"
+        return 1
+    fi
 
     # Habilitar Docker
-    systemctl enable docker
-    systemctl start docker
+    systemctl enable docker || echo "   ⚠️  Falha ao habilitar Docker na inicialização"
+    systemctl start docker || echo "   ⚠️  Falha ao iniciar Docker (pode já estar rodando)"
 
     echo -e "   ✅ Docker instalado e iniciado"
 }
@@ -618,42 +679,140 @@ main() {
     echo -e "${BLUE} 🚀 Iniciando instalação completa...${NC}"
     echo "=============================================="
 
-    # Instalação de dependências do sistema
-    install_dependencies
-    install_nodejs
-    install_pm2
-    install_docker
-    install_postgresql
-    install_puppeteer_deps
-    install_additional_tools
+    # Array para rastrear falhas
+    FAILED_STEPS=()
+
+    # Instalação de dependências do sistema com tratamento de erro
+    echo -e "${YELLOW} 📦 Etapa 1/8: Instalando dependências básicas${NC}"
+    if ! install_dependencies; then
+        FAILED_STEPS+=("dependências básicas")
+    fi
+
+    echo -e "${YELLOW} 💻 Etapa 2/8: Instalando Node.js${NC}"
+    if ! install_nodejs; then
+        FAILED_STEPS+=("Node.js")
+        echo -e "${RED}   ⚠️  Continuando sem Node.js (pode falhar mais tarde)${NC}"
+    fi
+
+    echo -e "${YELLOW} 🔧 Etapa 3/8: Instalando PM2${NC}"
+    if ! install_pm2; then
+        FAILED_STEPS+=("PM2")
+    fi
+
+    echo -e "${YELLOW} 🐳 Etapa 4/8: Instalando Docker${NC}"
+    if ! install_docker; then
+        FAILED_STEPS+=("Docker")
+        echo -e "${RED}   ⚠️  Continuando sem Docker (Redis pode falhar)${NC}"
+    fi
+
+    echo -e "${YELLOW} 🗄️ Etapa 5/8: Instalando PostgreSQL${NC}"
+    if ! install_postgresql; then
+        FAILED_STEPS+=("PostgreSQL")
+        echo -e "${RED}   ⚠️  Continuando sem PostgreSQL (banco de dados pode falhar)${NC}"
+    fi
+
+    echo -e "${YELLOW} 🎭 Etapa 6/8: Instalando dependências Puppeteer${NC}"
+    if ! install_puppeteer_deps; then
+        FAILED_STEPS+=("dependências Puppeteer")
+        echo -e "${RED}   ⚠️  Alguns recursos podem não funcionar${NC}"
+    fi
+
+    echo -e "${YELLOW} 🛠️ Etapa 7/8: Instalando ferramentas adicionais${NC}"
+    if ! install_additional_tools; then
+        FAILED_STEPS+=("ferramentas adicionais")
+    fi
 
     # Configuração do sistema
-    create_deploy_user
-    download_code
+    echo -e "${YELLOW} 👥 Etapa 8/8: Configurando sistema${NC}"
+    if ! create_deploy_user; then
+        FAILED_STEPS+=("criação de usuário")
+    fi
+
+    if ! download_code; then
+        FAILED_STEPS+=("download do código")
+    fi
 
     # Backend
-    setup_environment
-    install_backend_deps
-    build_backend
-    run_migrations
-    run_seeds
-    start_backend
+    echo -e "${CYAN} 🖥️  Configurando Backend...${NC}"
+    if setup_environment; then
+        install_backend_deps
+        build_backend
+        run_migrations
+        run_seeds
+        start_backend
+    else
+        FAILED_STEPS+=("configuração backend")
+    fi
 
     # Frontend
-    setup_frontend
-    install_frontend_deps
-    build_frontend
-    create_frontend_server
-    start_frontend
+    echo -e "${CYAN} 🎨 Configurando Frontend...${NC}"
+    if setup_frontend; then
+        install_frontend_deps
+        build_frontend
+        create_frontend_server
+        start_frontend
+    else
+        FAILED_STEPS+=("configuração frontend")
+    fi
 
     # Configurações finais
+    echo -e "${CYAN} 🔧 Configurações Finais...${NC}"
     setup_pm2_startup
     setup_nginx
     setup_ssl
     restart_services
 
-    # Informações finais
+    # Informações finais com status
+    if [ ${#FAILED_STEPS[@]} -eq 0 ]; then
+        echo ""
+        echo -e "${GREEN} 🎉 INSTALAÇÃO CONCLUÍDA COM SUCESSO TOTAL!${NC}"
+    else
+        echo ""
+        echo -e "${YELLOW} ⚠️  INSTALAÇÃO CONCLUÍDA COM ALERTAS:${NC}"
+        for step in "${FAILED_STEPS[@]}"; do
+            echo -e "   • $step"
+        done
+        echo ""
+        echo -e "${YELLOW} 💡 Alguns recursos podem não funcionar perfeitamente${NC}"
+    fi
+
     show_final_info
+
+    # Status dos serviços
+    echo ""
+    echo -e "${CYAN} 📊 Status dos Serviços:${NC}"
+    echo "=============================================="
+
+    # Verificar PM2
+    if command -v pm2 >/dev/null 2>&1; then
+        echo -e "   🚀 PM2: $(pm2 list | grep -c "online") processos online"
+        pm2 list --format json | jq -r '.[] | "\(.name\): \(.status\)" 2>/dev/null | while read line; do
+            echo -e "      • $line"
+        done
+    else
+        echo -e "   ❌ PM2: Não instalado"
+    fi
+
+    # Verificar Docker
+    if command -v docker >/dev/null 2>&1; then
+        echo -e "   🐳 Docker: $(docker --version | cut -d' ' -f3 | cut -d'-' -f1)"
+    else
+        echo -e "   ❌ Docker: Não instalado"
+    fi
+
+    # Verificar PostgreSQL
+    if command -v psql >/dev/null 2>&1; then
+        echo -e "   🗄️ PostgreSQL: $(psql --version | cut -d' ' -f3)"
+    else
+        echo -e "   ❌ PostgreSQL: Não instalado"
+    fi
+
+    # Verificar Nginx
+    if systemctl is-active --quiet nginx; then
+        echo -e "   🌐 Nginx: Ativo"
+    else
+        echo -e "   ❌ Nginx: Inativo"
+    fi
 }
 
 # Executar função principal
