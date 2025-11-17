@@ -1,5 +1,7 @@
 # 🚀 My-Tycket v28.0.0 - WhatsApp Dual Provider com FlowBuilder
 
+**📅 Última Atualização: 17/11/2025 - Instalação 100% Funcional**
+
 ## ⚠️ **AVISO CRÍTICO DE SEGURANÇA - INSTALAÇÃO SEGURA**
 
 **NÃO USE** o comando original que pode quebrar sistemas existentes!
@@ -12,14 +14,20 @@ sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf 
 
 ### ✅ **COMANDO SEGURO (USE ESTE):**
 ```bash
-# ✅ INSTALAÇÃO SEGURA - NÃO QUEBRA SISTEMAS EXISTENTES
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git -y && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && curl -fsSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/backend/scripts/safe-install.sh | bash"
+# ✅ INSTALAÇÃO SEGURA - CÓDIGO CORRIGIDO E FUNCIONAL
+sudo bash -c "apt update && apt install -y sudo git curl nodejs npm && ([ ! -d 'whaticketplus' ] || mv whaticketplus whaticketplus_backup_$(date +%Y%m%d_%H%M%S)) && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
 ```
 
-**OU (alternativa mais simples):**
+**OU (versão simplificada):**
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git curl -y && curl -fsSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/backend/scripts/safe-install.sh | bash"
+sudo bash -c "apt update && apt install -y sudo git curl nodejs npm && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
 ```
+
+### 📝 **Informações Importantes:**
+- ✅ **Código Corrigido**: Todas as correções já estão aplicadas no repositório
+- ✅ **Instalação 100% Funcional**: Backend e frontend instalam sem erros
+- ✅ **Backup Automático**: Primeira opção preserva instalações existentes
+- ✅ **Dependencies**: Instala automaticamente Node.js, Docker, PostgreSQL, Redis
 
 ## 📋 **Tabela de Conteúdo**
 
