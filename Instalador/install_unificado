@@ -685,7 +685,7 @@ if validate_installation; then
     print_banner
     printf "${WHITE} ✅ INSTALAÇÃO CONCLUÍDA COM SUCESSO!${GRAY_LIGHT}"
     printf "\n\n"
-    printf "${WHITE} 🌐 Acesse: https://${backend_url}${GRAY_LIGHT}"
+    printf "${WHITE} 🌐 Acesse: https://${frontend_url}${GRAY_LIGHT}"
     printf "\n"
     printf "${WHITE} 👤 Usuário: ${deploy_password}${GRAY_LIGHT}"
     printf "\n"

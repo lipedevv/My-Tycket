@@ -393,22 +393,79 @@ EOF
 #######################################
 system_certbot_setup() {
   print_banner
-  printf "${WHITE} 💻 Configurando certbot...${GRAY_LIGHT}"
+  printf "${WHITE} 💻 Configurando SSL inteligente...${GRAY_LIGHT}"
   printf "\n\n"
 
   sleep 2
 
   backend_domain=$(echo "${backend_url/https:\/\/}")
-  frontend_domain=$(echo "${frontend_url/https:\/\/}")
+  frontend_domain=$(echo "${frontend_url/https\/\/}")
 
-  sudo su - root <<EOF
-  certbot -m $deploy_email \
-          --nginx \
-          --agree-tos \
-          --non-interactive \
-          --domains $backend_domain,$frontend_domain
+  echo "🔧 Usando sistema inteligente de SSL com fallback automático..."
+  echo ""
 
+  # Verificar se o script inteligente existe
+  if [[ -f "${PROJECT_ROOT}/smart_ssl_setup.sh" ]]; then
+    echo "📋 Executando setup inteligente de SSL..."
+    chmod +x "${PROJECT_ROOT}/smart_ssl_setup.sh"
+    "${PROJECT_ROOT}/smart_ssl_setup.sh"
+  else
+    echo "⚠️ Script inteligente não encontrado, usando método fallback..."
+
+    # Fallback: método simplificado
+    sudo su - root <<EOF
+    # Verificar certificados existentes primeiro
+    if [[ -d "/etc/letsencrypt/live/$backend_domain" ]] && [[ -d "/etc/letsencrypt/live/$frontend_domain" ]]; then
+      echo "✅ Certificados Let's Encrypt já existem"
+
+      # Verificar validade
+      if [[ -f "/etc/letsencrypt/live/$backend_domain/cert.pem" ]]; then
+        expiry_date=\$(openssl x509 -in /etc/letsencrypt/live/$backend_domain/cert.pem -noout -enddate | cut -d= -f2)
+        if [[ ! -z "\$expiry_date" ]]; then
+          echo "📅 Certificado expira em: \$expiry_date"
+          echo "✅ Mantendo certificados existentes"
+        fi
+      fi
+
+    else
+      echo "🔐 Tentando gerar certificados Let's Encrypt..."
+
+      if certbot -m $deploy_email \
+              --nginx \
+              --agree-tos \
+              --non-interactive \
+              --domains $backend_domain,$frontend_domain; then
+        echo "✅ Certificados Let's Encrypt gerados com sucesso!"
+
+      else
+        echo "⚠️ Falha no Let's Encrypt → Fallback para autoassinado"
+
+        # Verificar se é rate limit
+        if certbot certificates 2>&1 | grep -q "too many certificates"; then
+          echo "📅 Rate limit detectado. Usando autoassinado temporariamente."
+        fi
+
+        # Gerar certificado autoassinado simples
+        mkdir -p /etc/ssl/self-signed
+
+        openssl req -x509 -nodes -days 365 \
+          -newkey rsa:2048 \
+          -keyout /etc/ssl/self-signed/temp.key \
+          -out /etc/ssl/self-signed/temp.crt \
+          -subj "/C=BR/ST=SP/L=SaoPaulo/O=MyTycket/OU=IT/CN=$frontend_domain" 2>/dev/null
+
+        if [[ \$? -eq 0 ]]; then
+          echo "✅ Certificado autoassinado gerado como fallback"
+          echo "⚠️ Use https://$frontend_domain (com alerta de segurança)"
+          echo "💡 Execute ./fix_ssl.sh quando o rate limit expirar para certificado válido"
+        else
+          echo "❌ Falha total. Configure HTTP apenas."
+          echo "🌐 Use http://$frontend_domain"
+        fi
+      fi
+    fi
 EOF
+  fi
 
   sleep 2
 }
