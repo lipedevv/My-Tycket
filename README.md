@@ -29,6 +29,18 @@ chmod +x ./whaticketplus
 sudo ./whaticketplus
 ```
 
+### 🔄 **COMANDOS ALTERNATIVOS (SE O ACIMA FALHAR):**
+
+**Opção 2: Comando alternativo**
+```bash
+sudo bash -c "apt update && apt install -y git curl && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
+```
+
+**Opção 3: Script direto via curl**
+```bash
+sudo bash -c "apt update && apt install -y git curl && curl -fsSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/whaticketplus | bash"
+```
+
 ### 📝 **Informações Importantes:**
 - ✅ **Script Auto-contido**: Não depende de arquivos externos
 - ✅ **Instalação 100% Automática**: Backend, frontend, banco de dados, SSL
@@ -527,7 +539,14 @@ Para suporte empresarial 24/7:
 
 O instalador seguro garante que seu sistema existente **NÃO SERÁ AFETADO**, criando backups automáticos e permitindo rollback completo se necessário.
 
-**Comando Seguro (mesma estrutura do original):**
+**📋 Comandos recomendados (use um dos abaixo):**
+
+**Opção 1: Oficial (mais segura)**
 ```bash
-sudo bash -c "apt update && apt upgrade -y && apt install sudo git curl -y && curl -fsSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/backend/scripts/safe-install.sh | bash"
+sudo bash -c "apt update && apt install -y git curl && rm -rf whaticketplus && git clone https://github.com/DEV7Kadu/My-Tycket.git whaticketplus && cd whaticketplus && chmod +x ./whaticketplus && ./whaticketplus"
+```
+
+**Opção 2: Via curl (sem quebras de linha)**
+```bash
+sudo bash -c "apt update && apt install -y git curl && curl -fsSL https://raw.githubusercontent.com/DEV7Kadu/My-Tycket/main/whaticketplus | bash"
 ```
