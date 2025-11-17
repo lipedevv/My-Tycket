@@ -647,6 +647,28 @@ Para suporte empresarial 24/7:
 
 ---
 
+## ⚠️ **Nota Importante - Instalação do Zero**
+
+### 📝 **Últimas Correções Aplicadas (17/11/2025):**
+
+**🔧 Erro 404 npm corrigido:**
+- ❌ Problema: `npm error 404 Not Found - @types/reactflow@^11.10.0`
+- ✅ Solução: Removida dependência incorreta do package.json
+- 📁 Arquivo: `Código Fonte/backend/package.json`
+
+**🎨 Ícones Material-UI corrigidos:**
+- ❌ Problema: Ícone `Hub` não existe
+- ✅ Solução: Substituído por `Router` em todos os arquivos frontend
+- 📁 Arquivos: 3 arquivos frontend
+
+**📋 Documentação completa:**
+- 📚 Arquivo `CÓDIGOS_CORRIGIDOS.md` criado com todas as correções
+- 📝 README.md totalmente atualizado para v3.0
+- 🚀 Script v3.0 Super Enhanced baseado no Instalador 2 Pro
+
+### 🎯 **Recomendação para Reinstalação:**
+Use sempre os comandos oficiais da seção **Instalação Segura v3.0** acima.
+
 ## 📜 **Licença**
 
 **My-Tycket v28.0.0** - Licença MIT
