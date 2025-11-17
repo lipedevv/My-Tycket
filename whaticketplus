@@ -662,7 +662,10 @@ show_final_info() {
     echo -e "   🔗 Backend: ${YELLOW}${BACKEND_PORT:-8080}${NC} (API)"
     echo -e "   🎨 Frontend: ${YELLOW}${FRONTEND_PORT:-3000}${NC} (React)"
     echo -e "   🗄️ PostgreSQL: ${YELLOW}${POSTGRES_PORT:-5432}${NC} (Database)"
-    echo -e "   📦 Redis: ${YELLOW}6379${NC} (Cache)"
+    echo -e "   📦 Redis: ${YELLOW}${REDIS_PORT:-6379}${NC} (Cache/Session)"
+    echo -e "   🐳 Docker Daemon: ${YELLOW}${DOCKER_PORT:-2375}${NC} (Docker API)"
+    echo -e "   🐳 Docker Registry: ${YELLOW}9000${NC} (Container Registry)"
+    echo -e "   📱 WhatsApp: ${YELLOW}5037${NC} (Baileys/WhatsApp)"
     echo ""
     echo -e "${CYAN} 📋 Informações Úteis:${NC}"
     echo -e "   🌐 Domínio: ${YELLOW}${BASE_URL:-localhost}${NC}"
@@ -676,7 +679,9 @@ show_final_info() {
     echo -e "   Reiniciar tudo: ${YELLOW}pm2 restart all${NC}"
     echo -e "   Ver status: ${YELLOW}pm2 status${NC}"
     echo -e "   Ver logs: ${YELLOW}pm2 logs --lines 50${NC}"
-    echo -e "   Ver portas: ${YELLOW}netstat -tuln | grep -E '${BACKEND_PORT:-8080}|${FRONTEND_PORT:-3000}|${POSTGRES_PORT:-5432}'${NC}"
+    echo -e "   Ver portas: ${YELLOW}netstat -tuln | grep -E '${BACKEND_PORT:-8080}|${FRONTEND_PORT:-3000}|${POSTGRES_PORT:-5432}|${REDIS_PORT:-6379}|${DOCKER_PORT:-2375}'${NC}"
+    echo -e "   Status Redis: ${YELLOW}redis-cli -p ${REDIS_PORT:-6379} ping${NC}"
+    echo -e "   Status Docker: ${YELLOW}docker -H tcp://localhost:${DOCKER_PORT:-2375} info${NC}"
     echo ""
     echo -e "${GREEN} 🎉 My-Tycket v28 está pronto para uso!${NC}"
 }
@@ -694,9 +699,16 @@ check_ports() {
         ["3000"]="Frontend (React)"
         ["8080"]="Backend API"
         ["5432"]="PostgreSQL"
-        ["6379"]="Redis"
+        ["6379"]="Redis Server"
+        ["2375"]="Docker Daemon"
+        ["2376"]="Docker Daemon (TLS)"
+        ["2377"]="Docker Swarm"
+        ["4789"]="Docker Overlay Network"
+        ["7946"]="Docker Cluster"
         ["5037"]="WhatsApp Baileys"
         ["8081"]="Hub API Alternative"
+        ["9000"]="Docker Registry"
+        ["9001"]="Docker Registry UI"
     )
 
     echo -e "${YELLOW}Verificando portas necessárias...${NC}"
@@ -765,6 +777,12 @@ collect_config() {
     read -p "Porta PostgreSQL (padrão 5432): " POSTGRES_PORT
     POSTGRES_PORT=${POSTGRES_PORT:-5432}
 
+    read -p "Porta Redis Server (padrão 6379): " REDIS_PORT
+    REDIS_PORT=${REDIS_PORT:-6379}
+
+    read -p "Porta Docker Daemon (padrão 2375): " DOCKER_PORT
+    DOCKER_PORT=${DOCKER_PORT:-2375}
+
     # Email para SSL
     echo ""
     echo -e "${YELLOW}📧 Email para certificado SSL (Let's Encrypt):${NC}"
@@ -782,6 +800,8 @@ collect_config() {
     echo -e "   🔗 Backend Port: ${CYAN}${BACKEND_PORT}${NC}"
     echo -e "   🎨 Frontend Port: ${CYAN}${FRONTEND_PORT}${NC}"
     echo -e "   🗄️ PostgreSQL Port: ${CYAN}${POSTGRES_PORT}${NC}"
+    echo -e "   📦 Redis Port: ${CYAN}${REDIS_PORT}${NC}"
+    echo -e "   🐳 Docker Daemon Port: ${CYAN}${DOCKER_PORT}${NC}"
     echo -e "   📧 Email SSL: ${CYAN}${SSL_EMAIL}${NC}"
     echo ""
     read -p "Confirmar configurações? (s/n): " CONFIRM
@@ -798,6 +818,8 @@ collect_config() {
     export BACKEND_PORT
     export FRONTEND_PORT
     export POSTGRES_PORT
+    export REDIS_PORT
+    export DOCKER_PORT
     export FRONTEND_URL="https://${BASE_URL}"
     export BACKEND_URL="https://api.${BASE_URL}"
 }
