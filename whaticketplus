@@ -656,6 +656,14 @@ show_final_info() {
     echo -e "   🎨 Frontend: ${BLUE}${FRONTEND_URL:-https://painel.whaticketplus.com}${NC}"
     echo -e "   🔗 API: ${BLUE}${BACKEND_URL:-https://wapi.whaticketplus.com}${NC}"
     echo ""
+    echo -e "${CYAN} 🔌 Portas Configuradas:${NC}"
+    echo -e "   🌐 HTTP: ${YELLOW}80${NC} (Nginx)"
+    echo -e "   🔒 HTTPS: ${YELLOW}443${NC} (Nginx + SSL)"
+    echo -e "   🔗 Backend: ${YELLOW}${BACKEND_PORT:-8080}${NC} (API)"
+    echo -e "   🎨 Frontend: ${YELLOW}${FRONTEND_PORT:-3000}${NC} (React)"
+    echo -e "   🗄️ PostgreSQL: ${YELLOW}${POSTGRES_PORT:-5432}${NC} (Database)"
+    echo -e "   📦 Redis: ${YELLOW}6379${NC} (Cache)"
+    echo ""
     echo -e "${CYAN} 📋 Informações Úteis:${NC}"
     echo -e "   🌐 Domínio: ${YELLOW}${BASE_URL:-localhost}${NC}"
     echo -e "   📧 Email SSL: ${YELLOW}${SSL_EMAIL:-admin@localhost}${NC}"
@@ -668,11 +676,65 @@ show_final_info() {
     echo -e "   Reiniciar tudo: ${YELLOW}pm2 restart all${NC}"
     echo -e "   Ver status: ${YELLOW}pm2 status${NC}"
     echo -e "   Ver logs: ${YELLOW}pm2 logs --lines 50${NC}"
+    echo -e "   Ver portas: ${YELLOW}netstat -tuln | grep -E '${BACKEND_PORT:-8080}|${FRONTEND_PORT:-3000}|${POSTGRES_PORT:-5432}'${NC}"
     echo ""
     echo -e "${GREEN} 🎉 My-Tycket v28 está pronto para uso!${NC}"
 }
 
 # Função principal
+# Função para verificar portas
+check_ports() {
+    echo -e "${CYAN} 🔍 Verificação de Portas${NC}"
+    echo "=============================================="
+
+    # Portas necessárias
+    declare -A ports=(
+        ["80"]="HTTP (Nginx)"
+        ["443"]="HTTPS (Nginx + SSL)"
+        ["3000"]="Frontend (React)"
+        ["8080"]="Backend API"
+        ["5432"]="PostgreSQL"
+        ["6379"]="Redis"
+        ["5037"]="WhatsApp Baileys"
+        ["8081"]="Hub API Alternative"
+    )
+
+    echo -e "${YELLOW}Verificando portas necessárias...${NC}"
+    echo ""
+
+    local port_conflicts=()
+
+    for port in "${!ports[@]}"; do
+        if netstat -tuln 2>/dev/null | grep -q ":$port "; then
+            echo -e "   ❌ Porta ${RED}$port${NC} (${ports[$port]}) - ${RED}OCUPADA${NC}"
+            port_conflicts+=("$port")
+        else
+            echo -e "   ✅ Porta ${GREEN}$port${NC} (${ports[$port]}) - ${GREEN}LIVRE${NC}"
+        fi
+    done
+
+    echo ""
+
+    if [[ ${#port_conflicts[@]} -gt 0 ]]; then
+        echo -e "${RED} ⚠️  ATENÇÃO: Portas ocupadas detectadas:${NC}"
+        for port in "${port_conflicts[@]}"; do
+            echo -e "   • Porta $port (${ports[$port]})"
+        done
+        echo ""
+        echo -e "${YELLOW}💡 Isso pode causar conflitos. Deseja continuar?${NC}"
+        read -p "Continuar mesmo assim? (s/n): " continue_ports
+
+        if [[ "$continue_ports" != "s" && "$continue_ports" != "S" ]]; then
+            echo -e "${RED}❌ Instalação cancelada pelo usuário${NC}"
+            exit 1
+        fi
+    else
+        echo -e "${GREEN} 🎉 Todas as portas estão livres!${NC}"
+    fi
+
+    echo ""
+}
+
 # Função para coletar configurações do usuário
 collect_config() {
     echo -e "${CYAN} ⚙️  Configurações do Sistema${NC}"
@@ -688,6 +750,21 @@ collect_config() {
         echo -e "${YELLOW}⚠️  Usando padrão: localhost${NC}"
     fi
 
+    # Portas personalizadas
+    echo ""
+    echo -e "${YELLOW}🔌 Configuração de Portas:${NC}"
+    echo -e "${BLUE}Pressione Enter para usar valores padrão${NC}"
+    echo ""
+
+    read -p "Porta Backend (padrão 8080): " BACKEND_PORT
+    BACKEND_PORT=${BACKEND_PORT:-8080}
+
+    read -p "Porta Frontend (padrão 3000): " FRONTEND_PORT
+    FRONTEND_PORT=${FRONTEND_PORT:-3000}
+
+    read -p "Porta PostgreSQL (padrão 5432): " POSTGRES_PORT
+    POSTGRES_PORT=${POSTGRES_PORT:-5432}
+
     # Email para SSL
     echo ""
     echo -e "${YELLOW}📧 Email para certificado SSL (Let's Encrypt):${NC}"
@@ -702,6 +779,9 @@ collect_config() {
     echo ""
     echo -e "${GREEN} 📋 Resumo das configurações:${NC}"
     echo -e "   🌐 URL Base: ${CYAN}${BASE_URL}${NC}"
+    echo -e "   🔗 Backend Port: ${CYAN}${BACKEND_PORT}${NC}"
+    echo -e "   🎨 Frontend Port: ${CYAN}${FRONTEND_PORT}${NC}"
+    echo -e "   🗄️ PostgreSQL Port: ${CYAN}${POSTGRES_PORT}${NC}"
     echo -e "   📧 Email SSL: ${CYAN}${SSL_EMAIL}${NC}"
     echo ""
     read -p "Confirmar configurações? (s/n): " CONFIRM
@@ -715,6 +795,9 @@ collect_config() {
     # Exportar variáveis
     export BASE_URL
     export SSL_EMAIL
+    export BACKEND_PORT
+    export FRONTEND_PORT
+    export POSTGRES_PORT
     export FRONTEND_URL="https://${BASE_URL}"
     export BACKEND_URL="https://api.${BASE_URL}"
 }
@@ -723,6 +806,9 @@ main() {
     print_banner
     check_root
     detect_system
+
+    # Verificar portas primeiro
+    check_ports
 
     # Coletar configurações do usuário
     collect_config
