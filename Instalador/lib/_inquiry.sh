@@ -103,6 +103,22 @@ get_redis_port() {
   read -p "> " redis_port
 }
 
+get_postgresql_port() {
+  
+  print_banner
+  printf "${WHITE} 💻 Digite a porta do POSTGRESQL/BANCO DE DADOS para a ${instancia_add}; Ex: 5432 (padrão) ${GRAY_LIGHT}"
+  printf "\n\n"
+  read -p "> " postgresql_port
+}
+
+get_docker_port() {
+  
+  print_banner
+  printf "${WHITE} 💻 Digite a porta do DOCKER DAEMON para a ${instancia_add}; Ex: 2375 (padrão) ${GRAY_LIGHT}"
+  printf "\n\n"
+  read -p "> " docker_port
+}
+
 get_empresa_delete() {
   
   print_banner
@@ -188,6 +204,8 @@ get_urls() {
   get_frontend_port
   get_backend_port
   get_redis_port
+  get_postgresql_port
+  get_docker_port
 }
 
 software_update() {

@@ -63,7 +63,7 @@ PORT=${backend_port}
 
 DB_DIALECT=postgres
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=${postgresql_port}
 DB_USER=${instancia_add}
 DB_PASS=${mysql_root_password}
 DB_NAME=${instancia_add}
