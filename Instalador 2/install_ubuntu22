@@ -1,0 +1,171 @@
+#!/bin/bash
+
+# reset shell colors
+tput init
+
+# Ubuntu 22/24 Compatible Installation Script
+echo "🚀 WhatiTicket Plus - Ubuntu 22/24 LTS Installer"
+echo "================================================="
+
+# https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  PROJECT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$PROJECT_ROOT/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+PROJECT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+# required imports
+source "${PROJECT_ROOT}"/variables/manifest.sh
+source "${PROJECT_ROOT}"/utils/manifest.sh
+
+# Load Ubuntu 22/24 compatible system functions
+if [[ -f "${PROJECT_ROOT}"/lib/_system_ubuntu22.sh ]]; then
+  source "${PROJECT_ROOT}"/lib/_system_ubuntu22.sh
+else
+  echo "⚠️ Usando sistema original (pode ter problemas no Ubuntu 22+)"
+  source "${PROJECT_ROOT}"/lib/_system.sh
+fi
+
+# Load other functions
+source "${PROJECT_ROOT}"/lib/_backend.sh
+source "${PROJECT_ROOT}"/lib/_frontend.sh
+source "${PROJECT_ROOT}"/lib/_inquiry.sh
+
+# user configs file
+if [[ ! -e "${PROJECT_ROOT}"/config ]]; then
+  cat << EOF > "${PROJECT_ROOT}"/config
+deploy_password=${deploy_password}
+mysql_root_password=${mysql_root_password}
+db_pass=${db_pass}
+EOF
+fi
+
+# this file has passwords
+sudo su - root <<EOF
+chown root:root "${PROJECT_ROOT}"/config
+chmod 700 "${PROJECT_ROOT}"/config
+EOF
+source "${PROJECT_ROOT}"/config
+
+# Check Ubuntu compatibility first
+ubuntu_compatibility_check
+
+# interactive CLI
+inquiry_options
+
+# dependencies related
+system_update
+system_node_install
+system_pm2_install
+system_docker_install
+system_puppeteer_dependencies
+system_snapd_install
+system_nginx_install
+system_certbot_install
+
+# system config
+system_create_user
+
+# backend related
+system_git_clone
+backend_set_env
+backend_redis_create
+backend_node_dependencies
+backend_node_build
+backend_db_migrate
+backend_db_seed
+backend_start_pm2
+backend_nginx_setup
+
+# frontend related
+frontend_set_env
+frontend_node_dependencies
+frontend_node_build
+frontend_start_pm2
+frontend_nginx_setup
+
+# network related
+system_nginx_conf
+system_nginx_restart
+system_certbot_setup
+
+# Verificação pós-instalação e scripts de correção
+echo ""
+print_banner
+printf "${WHITE} 🔧 Configurando scripts de manutenção...${GRAY_LIGHT}\n"
+printf "\n\n"
+
+# Criar diretório de scripts
+mkdir -p /home/deploy/${instancia_add}/scripts
+chown deploy:deploy /home/deploy/${instancia_add}/scripts
+
+# Copiar script de verificação
+chmod +x "${PROJECT_ROOT}"/utils/verify_installation.sh
+cp "${PROJECT_ROOT}"/utils/verify_installation.sh /home/deploy/${instancia_add}/scripts/
+
+# Criar script de correção do frontend
+cat > /home/deploy/${instancia_add}/scripts/fix_frontend.sh << 'EOF'
+#!/bin/bash
+# Script de correção do frontend
+# Resolve problemas de build e index.html
+
+cd "$(dirname "$0")/.."
+INSTANCE_DIR="$(pwd)"
+
+echo "🔧 Corrigindo frontend do WhatTicket Plus..."
+echo "Instância: $(basename "$INSTANCE_DIR")"
+
+cd frontend
+
+# Configurar ambiente
+export NODE_ENV=production
+export GENERATE_SOURCEMAP=false
+export CI=false
+export NODE_OPTIONS="--max-old-space-size=6144"
+
+# Verificar se build existe
+if [[ -f "build/index.html" ]]; then
+    file_size=$(stat -c%s "build/index.html" 2>/dev/null || echo "0")
+    if [[ "$file_size" -gt 1000 ]]; then
+        echo "✅ Build já está funcionando ($file_size bytes)"
+        exit 0
+    fi
+fi
+
+echo "🏗️ Reconstruindo frontend..."
+npm cache clean --force
+rm -rf build/* node_modules/.cache .eslintcache 2>/dev/null || true
+npm install --production=false
+npm run build
+
+if [[ -f "build/index.html" ]]; then
+    file_size=$(stat -c%s "build/index.html" 2>/dev/null || echo "0")
+    if [[ "$file_size" -gt 1000 ]]; then
+        echo "✅ Frontend corrigido com sucesso ($file_size bytes)"
+        chmod -R 755 build/
+        chown -R deploy:deploy build/ 2>/dev/null || true
+        
+        # Reiniciar serviços
+        sudo systemctl restart $(basename "$INSTANCE_DIR") 2>/dev/null || true
+        pm2 restart all 2>/dev/null || true
+        
+        echo "🎉 Correção concluída!"
+    else
+        echo "❌ Falha na correção do frontend"
+        exit 1
+    fi
+else
+    echo "❌ Build falhou completamente"
+    exit 1
+fi
+EOF
+
+chmod +x /home/deploy/${instancia_add}/scripts/fix_frontend.sh
+chown deploy:deploy /home/deploy/${instancia_add}/scripts/fix_frontend.sh
+
+echo ""
+print_banner
+printf "${WHITE} ✅ Instalação concluída com sucesso!${GRAY_LIGHT}\n"
+printf "\n\n"
