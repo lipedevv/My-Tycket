@@ -3,42 +3,120 @@
 # My-Tycket v28 - Instalador Automático Completo
 # Compatível com Ubuntu 20.04, 22.04 e 24.04 LTS
 # Autor: DEV7Kadu
-# Versão: 2.0 - Script Auto-contido
+# Versão: 3.0 - Script Modular Avançado
 
 set -e  # Parar em caso de erro
 
-# Cores para output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-NC='\033[0m' # No Color
+# Detectar diretório do script (técnica do Instalador 2)
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  PROJECT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$PROJECT_ROOT/$SOURCE"
+done
+PROJECT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-# Função para imprimir banner
+# Cores para output (melhoradas do Instalador 2)
+readonly NC="\033[0m" # reset colors
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly PURPLE='\033[0;35m'
+readonly CYAN='\033[0;36m'
+readonly WHITE='\033[1;37m'
+readonly GRAY='\033[0;37m'
+readonly BG_BROWN="\e[0;43m"
+
+# Variáveis de segurança (geradas automaticamente)
+generate_secure_passwords() {
+    if [[ -z "$jwt_secret" ]]; then
+        jwt_secret=$(openssl rand -base64 32)
+    fi
+    if [[ -z "$db_pass" ]]; then
+        db_pass=$(openssl rand -base64 32)
+    fi
+    if [[ -z "$db_user" ]]; then
+        db_user=$(openssl rand -base64 16 | tr -d "=+/" | cut -c1-10)
+    fi
+    if [[ -z "$db_name" ]]; then
+        db_name=$(openssl rand -base64 16 | tr -d "=+/" | cut -c1-10)
+    fi
+}
+
+# Configurações padrão
+deploy_email="deploy@deploy.com"
+
+# Função para imprimir banner (estilo Instalador 2)
 print_banner() {
-    echo -e "${BLUE}"
-    echo "                                                     ▄▄█▀▀▀▀▀▀▀█▄▄"
-    echo "                                                   ▄█▀   ▄▄      ▀█▄"
-    echo "                                                   █    ███         █"
-    echo "                                                   █    ██▄         █"
-    echo "                                                   █     ▀██▄ ██    █"
-    echo "                                                   █       ▀███▀    █"
-    echo "                                                   ▀█▄           ▄█▀"
-    echo "                                                    ▄█    ▄▄▄▄█▀▀"
-    echo "                                                    █  ▄█▀"
-    echo "                                                    ▀▀▀▀"
-    echo ""
-    echo "██     ██ ██   ██  █████  ████████ ██  ██████ ██   ██ ███████ ████████"
-    echo "██     ██ ██   ██ ██   ██    ██    ██ ██      ██  ██  ██         ██"
-    echo "██  █  ██ ███████ ███████    ██    ██ ██      █████   █████      ██"
-    echo "██ ███ ██ ██   ██ ██   ██    ██    ██ ██      ██  ██  ██         ██"
-    echo " ███ ███  ██   ██ ██   ██    ██    ██  ██████ ██   ██ ███████    ██"
-    echo ""
-    echo -e "${CYAN}                    💻 My-Tycket v28.0.0 - Instalador Automático${NC}"
-    echo -e "${CYAN}                     🚀 WhatsApp Dual Provider + FlowBuilder${NC}"
-    echo -e "${NC}"
+    clear
+    printf "\n\n"
+
+    printf "${GREEN}";
+    printf "                                                     ▄▄█▀▀▀▀▀▀▀█▄▄  \n";
+    printf "                                                   ${GREEN}▄█▀${NC}   ${WHITE}▄▄${NC}      ${GREEN}▀█▄\n";
+    printf "                                                   ${GREEN}█${NC}    ${WHITE}███${NC}         ${GREEN}█\n";
+    printf "                                                   ${GREEN}█${NC}    ${WHITE}██▄         ${GREEN}█${NC}\n";
+    printf "                                                   ${GREEN}█${NC}     ${WHITE}▀██▄${NC} ${WHITE}██${NC}    ${GREEN}█\n";
+    printf "                                                   ${GREEN}█${NC}       ${WHITE}▀███▀${NC}    ${GREEN}█\n";
+    printf "                                                   ${GREEN}▀█▄           ▄█▀\n";
+    printf "                                                    ▄█    ▄▄▄▄█▀▀  \n";
+    printf "                                                    █  ▄█▀        \n";
+    printf "                                                    ▀▀▀▀          \n";
+    printf "${NC}";
+
+    printf "\n"
+
+    printf "${GREEN}";
+    printf "██     ██ ██   ██  █████  ████████ ██  ██████ ██   ██ ███████ ████████\n";
+    printf "██     ██ ██   ██ ██   ██    ██    ██ ██      ██  ██  ██         ██   \n";
+    printf "██  █  ██ ███████ ███████    ██    ██ ██      █████   █████      ██   \n";
+    printf "██ ███ ██ ██   ██ ██   ██    ██    ██ ██      ██  ██  ██         ██   \n";
+    printf " ███ ███  ██   ██ ██   ██    ██    ██  ██████ ██   ██ ███████    ██   \n";
+    printf "${NC}";
+
+    printf "\n"
+    printf "${CYAN}                    💻 My-Tycket v28.0.0 - Instalador Modular Avançado${NC}\n";
+    printf "${CYAN}                     🚀 WhatsApp Dual Provider + FlowBuilder${NC}\n";
+    printf "${CYAN}                      🔧 Baseado no Instalador 2 Pro${NC}\n";
+    printf "\n"
+}
+
+# Função para verificar compatibilidade Ubuntu (baseado no Instalador 2)
+ubuntu_compatibility_check() {
+    print_banner
+    printf "${WHITE} 💻 Verificando compatibilidade do Ubuntu...${NC}\n"
+
+    if command -v lsb_release >/dev/null 2>&1; then
+        VERSION=$(lsb_release -rs)
+        CODENAME=$(lsb_release -cs)
+
+        case $VERSION in
+            "20.04")
+                echo -e "   ✅ Ubuntu $VERSION (Focal) - ${GREEN}Totalmente suportado${NC}"
+                ;;
+            "22.04")
+                echo -e "   ✅ Ubuntu $VERSION (Jammy) - ${GREEN}Totalmente suportado${NC}"
+                ;;
+            "24.04")
+                echo -e "   ✅ Ubuntu $VERSION (Noble) - ${GREEN}Suportado com correções${NC}"
+                ;;
+            *)
+                echo -e "   ⚠️ Ubuntu $VERSION ($CODENAME) - ${YELLOW}Não testado oficialmente${NC}"
+                echo -e "   💡 Versões recomendadas: 20.04, 22.04, 24.04"
+                read -p "   🔄 Continuar mesmo assim? (s/n): " -n 1 -r
+                echo
+                if [[ ! $REPLY =~ ^[Ss]$ ]]; then
+                    echo -e "   ❌ Instalação cancelada pelo usuário"
+                    exit 1
+                fi
+                ;;
+        esac
+    else
+        echo -e "   ⚠️ Sistema não identificado, continuando anyway..."
+    fi
+
+    sleep 2
 }
 
 # Função para verificar se é root
@@ -684,6 +762,156 @@ show_final_info() {
     echo -e "   Status Docker: ${YELLOW}docker -H tcp://localhost:${DOCKER_PORT:-2375} info${NC}"
     echo ""
     echo -e "${GREEN} 🎉 My-Tycket v28 está pronto para uso!${NC}"
+    echo ""
+    echo -e "${CYAN} 🔄 Executando verificação pós-instalação...${NC}"
+    echo "=============================================="
+
+    # Chamar verificação pós-instalação
+    verify_installation
+}
+
+# Função de verificação pós-instalação (baseado no Instalador 2)
+verify_installation() {
+    local errors=0
+    local warnings=0
+
+    printf "\n${BLUE}🔍 VERIFICAÇÃO DE INSTALAÇÃO - MY-TYCKET V28${NC}\n"
+    echo "=================================================="
+
+    # Função para verificar arquivos
+    check_file() {
+        local file="$1"
+        local description="$2"
+
+        if [[ -f "$file" ]]; then
+            echo -e "${GREEN}✅ $description${NC}"
+            return 0
+        else
+            echo -e "${RED}❌ $description${NC}"
+            ((errors++))
+            return 1
+        fi
+    }
+
+    # Função para verificar diretórios
+    check_directory() {
+        local dir="$1"
+        local description="$2"
+
+        if [[ -d "$dir" ]]; then
+            echo -e "${GREEN}✅ $description${NC}"
+            return 0
+        else
+            echo -e "${RED}❌ $description${NC}"
+            ((errors++))
+            return 1
+        fi
+    }
+
+    # Função para verificar serviços
+    check_service() {
+        local service="$1"
+        local description="$2"
+
+        if systemctl is-active --quiet "$service" 2>/dev/null; then
+            echo -e "${GREEN}✅ $description - Ativo${NC}"
+            return 0
+        else
+            echo -e "${RED}❌ $description - Inativo${NC}"
+            ((errors++))
+            return 1
+        fi
+    }
+
+    # Função para verificar portas
+    check_port() {
+        local port="$1"
+        local description="$2"
+
+        if netstat -tuln 2>/dev/null | grep -q ":$port "; then
+            echo -e "${GREEN}✅ $description ($port) - Aberta${NC}"
+            return 0
+        else
+            echo -e "${YELLOW}⚠️ $description ($port) - Fechada${NC}"
+            ((warnings++))
+            return 1
+        fi
+    }
+
+    echo ""
+    echo -e "${CYAN}📁 Verificando arquivos e diretórios:${NC}"
+
+    # Verificar arquivos importantes
+    check_file "/home/deploy/whaticketplus/backend/package.json" "Backend package.json"
+    check_file "/home/deploy/whaticketplus/frontend/package.json" "Frontend package.json"
+    check_file "/etc/nginx/sites-available/whaticketplus" "Nginx config"
+    check_file "/home/deploy/whaticketplus/config" "Config file"
+
+    # Verificar diretórios
+    check_directory "/home/deploy/whaticketplus" "Application directory"
+    check_directory "/home/deploy/whaticketplus/backend/node_modules" "Backend dependencies"
+    check_directory "/home/deploy/whaticketplus/frontend/node_modules" "Frontend dependencies"
+
+    echo ""
+    echo -e "${CYAN}🔧 Verificando serviços:${NC}"
+
+    # Verificar serviços
+    check_service "nginx" "Nginx"
+    check_service "postgresql" "PostgreSQL"
+
+    # Verificar PM2 se disponível
+    if command -v pm2 >/dev/null 2>&1; then
+        echo -e "${GREEN}✅ PM2 - Instalado${NC}"
+        if pm2 list | grep -q "online"; then
+            echo -e "${GREEN}✅ PM2 processes - Online${NC}"
+        else
+            echo -e "${YELLOW}⚠️ PM2 processes - Offline${NC}"
+            ((warnings++))
+        fi
+    else
+        echo -e "${RED}❌ PM2 - Não instalado${NC}"
+        ((errors++))
+    fi
+
+    echo ""
+    echo -e "${CYAN}🌐 Verificando portas:${NC}"
+
+    # Verificar portas principais
+    check_port "80" "HTTP"
+    check_port "443" "HTTPS"
+    check_port "${BACKEND_PORT:-8080}" "Backend API"
+    check_port "${FRONTEND_PORT:-3000}" "Frontend"
+    check_port "${POSTGRES_PORT:-5432}" "PostgreSQL"
+    check_port "${REDIS_PORT:-6379}" "Redis"
+
+    echo ""
+    echo -e "${CYAN}📊 Resumo da verificação:${NC}"
+    echo "================================"
+
+    if [[ $errors -eq 0 ]]; then
+        if [[ $warnings -eq 0 ]]; then
+            echo -e "${GREEN}🎉 INSTALAÇÃO PERFEITA!${NC}"
+            echo -e "${GREEN}   • 0 erros encontrados${NC}"
+            echo -e "${GREEN}   • 0 avisos encontrados${NC}"
+        else
+            echo -e "${YELLOW}✅ INSTALAÇÃO FUNCIONAL!${NC}"
+            echo -e "${YELLOW}   • 0 erros encontrados${NC}"
+            echo -e "${YELLOW}   • $warnings avisos encontrados${NC}"
+        fi
+    else
+        echo -e "${RED}⚠️ INSTALAÇÃO COM PROBLEMAS!${NC}"
+        echo -e "${RED}   • $errors erros encontrados${NC}"
+        echo -e "${RED}   • $warnings avisos encontrados${NC}"
+        echo ""
+        echo -e "${YELLOW}💡 Verifique os itens marcados com ❌ acima${NC}"
+    fi
+
+    echo ""
+    echo -e "${CYAN}🔗 URLs de acesso:${NC}"
+    echo -e "   🎨 Frontend: ${BLUE}${FRONTEND_URL:-http://localhost}${NC}"
+    echo -e "   🔗 Backend: ${BLUE}${BACKEND_URL:-http://localhost:8080}${NC}"
+
+    echo ""
 }
 
 # Função principal
@@ -747,10 +975,46 @@ check_ports() {
     echo ""
 }
 
+# Função para detectar automaticamente o repositório Git (baseado no Instalador 2)
+detect_git_repository() {
+    print_banner
+    printf "${WHITE} 📂 Detectando repositório Git...${NC}\n"
+
+    # Tentar detectar automaticamente o repositório Git atual
+    if [[ -d ".git" ]]; then
+        # Pegar a URL do repositório atual
+        local detected_git=$(git config --get remote.origin.url 2>/dev/null)
+
+        if [[ -n "$detected_git" ]]; then
+            # Converter SSH para HTTPS se necessário
+            if [[ "$detected_git" =~ ^git@ ]]; then
+                detected_git=$(echo "$detected_git" | sed 's|git@github.com:|https://github.com/|' | sed 's|\.git$||')
+            fi
+
+            # Usar automaticamente o repositório detectado
+            GIT_REPO="$detected_git"
+            printf "${GREEN} ✅ Repositório Git detectado e selecionado automaticamente:${NC}\n"
+            printf "   📂 ${BLUE}$GIT_REPO${NC}\n\n"
+            sleep 2
+            return 0
+        fi
+    fi
+
+    # Se não detectou, usar padrão
+    GIT_REPO="https://github.com/DEV7Kadu/My-Tycket.git"
+    printf "${YELLOW} ⚠️ Usando repositório padrão:${NC}\n"
+    printf "   📂 ${BLUE}$GIT_REPO${NC}\n\n"
+    sleep 2
+}
+
 # Função para coletar configurações do usuário
 collect_config() {
-    echo -e "${CYAN} ⚙️  Configurações do Sistema${NC}"
+    print_banner
+    printf "${WHITE} ⚙️  Configurações do Sistema${NC}\n"
     echo "=============================================="
+
+    # Detectar repositório Git automaticamente
+    detect_git_repository
 
     # URL Base
     echo -e "${YELLOW}🌐 Informe a URL base para o sistema:${NC}"
@@ -827,12 +1091,21 @@ collect_config() {
 main() {
     print_banner
     check_root
+
+    # Nova verificação de compatibilidade Ubuntu
+    ubuntu_compatibility_check
+
+    # Sistema detectado (melhorado)
     detect_system
+
+    # Gerar senhas seguras automaticamente
+    generate_secure_passwords
+    printf "${GREEN} 🔐 Senhas seguras geradas automaticamente${NC}\n"
 
     # Verificar portas primeiro
     check_ports
 
-    # Coletar configurações do usuário
+    # Coletar configurações do usuário (com detecção Git)
     collect_config
 
     echo -e "${BLUE} 🚀 Iniciando instalação completa...${NC}"
