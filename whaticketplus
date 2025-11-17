@@ -653,10 +653,12 @@ show_final_info() {
     echo -e "${GREEN} ✅ Instalação concluída com sucesso!${NC}"
     echo ""
     echo -e "${CYAN} 🌐 URLs de Acesso:${NC}"
-    echo -e "   🎨 Frontend: ${BLUE}https://painel.whaticketplus.com${NC}"
-    echo -e "   🔗 API: ${BLUE}https://wapi.whaticketplus.com${NC}"
+    echo -e "   🎨 Frontend: ${BLUE}${FRONTEND_URL:-https://painel.whaticketplus.com}${NC}"
+    echo -e "   🔗 API: ${BLUE}${BACKEND_URL:-https://wapi.whaticketplus.com}${NC}"
     echo ""
     echo -e "${CYAN} 📋 Informações Úteis:${NC}"
+    echo -e "   🌐 Domínio: ${YELLOW}${BASE_URL:-localhost}${NC}"
+    echo -e "   📧 Email SSL: ${YELLOW}${SSL_EMAIL:-admin@localhost}${NC}"
     echo -e "   👤 Usuário: ${YELLOW}deploy${NC}"
     echo -e "   📁 Diretório: ${YELLOW}/home/deploy/whaticketplus${NC}"
     echo -e "   🔧 PM2 Status: ${YELLOW}pm2 status${NC}"
@@ -671,10 +673,59 @@ show_final_info() {
 }
 
 # Função principal
+# Função para coletar configurações do usuário
+collect_config() {
+    echo -e "${CYAN} ⚙️  Configurações do Sistema${NC}"
+    echo "=============================================="
+
+    # URL Base
+    echo -e "${YELLOW}🌐 Informe a URL base para o sistema:${NC}"
+    echo -e "${BLUE}Exemplo: seu-dominio.com${NC}"
+    read -p "URL Base: " BASE_URL
+
+    if [[ -z "$BASE_URL" ]]; then
+        BASE_URL="localhost"
+        echo -e "${YELLOW}⚠️  Usando padrão: localhost${NC}"
+    fi
+
+    # Email para SSL
+    echo ""
+    echo -e "${YELLOW}📧 Email para certificado SSL (Let's Encrypt):${NC}"
+    read -p "Email: " SSL_EMAIL
+
+    if [[ -z "$SSL_EMAIL" ]]; then
+        SSL_EMAIL="admin@${BASE_URL}"
+        echo -e "${YELLOW}⚠️  Usando padrão: admin@${BASE_URL}${NC}"
+    fi
+
+    # Confirmar configurações
+    echo ""
+    echo -e "${GREEN} 📋 Resumo das configurações:${NC}"
+    echo -e "   🌐 URL Base: ${CYAN}${BASE_URL}${NC}"
+    echo -e "   📧 Email SSL: ${CYAN}${SSL_EMAIL}${NC}"
+    echo ""
+    read -p "Confirmar configurações? (s/n): " CONFIRM
+
+    if [[ "$CONFIRM" != "s" && "$CONFIRM" != "S" ]]; then
+        echo -e "${YELLOW}🔄 Reiniciando configuração...${NC}"
+        collect_config
+        return
+    fi
+
+    # Exportar variáveis
+    export BASE_URL
+    export SSL_EMAIL
+    export FRONTEND_URL="https://${BASE_URL}"
+    export BACKEND_URL="https://api.${BASE_URL}"
+}
+
 main() {
     print_banner
     check_root
     detect_system
+
+    # Coletar configurações do usuário
+    collect_config
 
     echo -e "${BLUE} 🚀 Iniciando instalação completa...${NC}"
     echo "=============================================="
