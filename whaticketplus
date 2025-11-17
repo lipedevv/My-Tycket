@@ -1047,6 +1047,26 @@ collect_config() {
     read -p "Porta Docker Daemon (padrão 2375): " DOCKER_PORT
     DOCKER_PORT=${DOCKER_PORT:-2375}
 
+    # URLs personalizadas
+    echo ""
+    echo -e "${YELLOW}🌐 Configuração de URLs (opcional):${NC}"
+    echo -e "${BLUE}Pressione Enter para usar valores automáticos${NC}"
+    echo ""
+
+    # Gerar URLs automáticas baseadas na BASE_URL
+    AUTO_FRONTEND_URL="https://${BASE_URL}"
+    AUTO_BACKEND_URL="https://api.${BASE_URL}"
+
+    echo -e "   🎨 URL Frontend (padrão: ${AUTO_FRONTEND_URL}):"
+    read -p "   > " INPUT_FRONTEND_URL
+
+    echo -e "   🔗 URL Backend (padrão: ${AUTO_BACKEND_URL}):"
+    read -p "   > " INPUT_BACKEND_URL
+
+    # Usar URLs personalizadas ou automáticas
+    FRONTEND_URL=${INPUT_FRONTEND_URL:-$AUTO_FRONTEND_URL}
+    BACKEND_URL=${INPUT_BACKEND_URL:-$AUTO_BACKEND_URL}
+
     # Email para SSL
     echo ""
     echo -e "${YELLOW}📧 Email para certificado SSL (Let's Encrypt):${NC}"
@@ -1061,7 +1081,9 @@ collect_config() {
     echo ""
     echo -e "${GREEN} 📋 Resumo das configurações:${NC}"
     echo -e "   🌐 URL Base: ${CYAN}${BASE_URL}${NC}"
-    echo -e "   🔗 Backend Port: ${CYAN}${BACKEND_PORT}${NC}"
+    echo -e "   🎨 Frontend URL: ${CYAN}${FRONTEND_URL}${NC}"
+    echo -e "   🔗 Backend URL: ${CYAN}${BACKEND_URL}${NC}"
+    echo -e "   🔌 Backend Port: ${CYAN}${BACKEND_PORT}${NC}"
     echo -e "   🎨 Frontend Port: ${CYAN}${FRONTEND_PORT}${NC}"
     echo -e "   🗄️ PostgreSQL Port: ${CYAN}${POSTGRES_PORT}${NC}"
     echo -e "   📦 Redis Port: ${CYAN}${REDIS_PORT}${NC}"
@@ -1084,8 +1106,8 @@ collect_config() {
     export POSTGRES_PORT
     export REDIS_PORT
     export DOCKER_PORT
-    export FRONTEND_URL="https://${BASE_URL}"
-    export BACKEND_URL="https://api.${BASE_URL}"
+    export FRONTEND_URL
+    export BACKEND_URL
 }
 
 main() {
