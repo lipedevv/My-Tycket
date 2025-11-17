@@ -1,4 +1,4 @@
-import { Sequelize, Model, DataTypes, BuildOptions } from 'sequelize';
+import { Sequelize, Model, DataTypes, BuildOptions, Op } from 'sequelize';
 import { isObject } from 'lodash';
 
 interface WhatsAppProviderAttributes {
@@ -250,7 +250,7 @@ WhatsAppProvider.beforeUpdate(async (provider: WhatsAppProvider) => {
         where: {
           companyId: provider.companyId,
           isDefault: true,
-          id: { [Sequelize.Op.ne]: provider.id }
+          id: { [Op.ne]: provider.id }
         }
       }
     );

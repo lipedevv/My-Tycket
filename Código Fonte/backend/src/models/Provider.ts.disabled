@@ -1,0 +1,115 @@
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../database';
+
+interface ProviderAttributes {
+  id: number;
+  name: string;
+  type: string;
+  status: string;
+  config: object;
+  companyId: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+class Provider extends Model<ProviderAttributes> implements ProviderAttributes {
+  public id!: number;
+  public name!: string;
+  public type!: string;
+  public status!: string;
+  public config!: object;
+  public companyId!: number;
+
+  // Timestamps
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+
+  // Métodos estáticos simplificados
+  public static async findByCompany(companyId: number): Promise<Provider[]> {
+    return this.findAll({
+      where: {
+        companyId: companyId
+      }
+    });
+  }
+
+  public static async findByType(type: string): Promise<Provider[]> {
+    return this.findAll({
+      where: {
+        type: type
+      }
+    });
+  }
+
+  public static async findActive(): Promise<Provider[]> {
+    return this.findAll({
+      where: {
+        status: 'active'
+      }
+    });
+  }
+
+  // Método de validação simplificado
+  public validate(): string[] {
+    const errors: string[] = [];
+    
+    if (!this.name || this.name.length < 2) {
+      errors.push('Nome deve ter pelo menos 2 caracteres');
+    }
+    
+    if (!this.type) {
+      errors.push('Tipo é obrigatório');
+    }
+    
+    if (!this.status) {
+      errors.push('Status é obrigatório');
+    }
+    
+    return errors;
+  }
+}
+
+Provider.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.ENUM('hub', 'baileys', 'api', 'webhook'),
+      allowNull: false,
+      defaultValue: 'baileys',
+    },
+    status: {
+      type: DataTypes.ENUM('active', 'inactive', 'error', 'connecting', 'connected', 'disconnected'),
+      allowNull: false,
+      defaultValue: 'inactive',
+    },
+    config: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: {},
+    },
+    companyId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Companies',
+        key: 'id',
+      },
+    },
+  },
+  {
+    sequelize,
+    modelName: 'Provider',
+    tableName: 'Providers',
+    timestamps: true,
+  }
+);
+
+export default Provider;

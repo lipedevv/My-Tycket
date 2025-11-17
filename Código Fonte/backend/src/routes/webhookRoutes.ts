@@ -8,7 +8,7 @@ import {
   authenticateWebhook,
   validateWebhookPayload,
   rateLimitWebhook
-} from '../middlewares/webhookMiddleware';
+} from '../middleware/webhookMiddleware';
 
 const routes = Router();
 
