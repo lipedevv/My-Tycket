@@ -45,6 +45,7 @@ sudo bash -c "apt update && apt install -y git curl && curl -fsSL https://raw.gi
 - ✅ **Script Auto-contido**: Não depende de arquivos externos
 - ✅ **Instalação 100% Automática**: Backend, frontend, banco de dados, SSL
 - ✅ **Código Corrigido**: Todas as correções já estão aplicadas
+- ✅ **Sintaxe Validada**: Script verificado com `bash -n` sem erros
 - ✅ **Compatibilidade Total**: Ubuntu 20.04, 22.04, 24.04 LTS
 - ✅ **Instalação Completa**: Node.js, Docker, PostgreSQL, Redis, Nginx, SSL
 - ✅ **PM2 Gerenciado**: Inicialização automática com o sistema
@@ -451,6 +452,17 @@ HUB_WEBHOOK_SECRET=your_webhook_secret
 ## 🚨 **Troubleshooting**
 
 ### Issues Comuns
+
+#### Script Installation Error
+
+**Erro: `unexpected EOF while looking for matching`**
+```bash
+# Solução: Baixe a versão mais recente
+cd whaticketplus
+git pull origin main
+chmod +x ./whaticketplus
+./whaticketplus
+```
 
 #### Database Connection Error
 
